@@ -1,0 +1,10 @@
+# Avoiding accidental upload of the Sketch and Figma design files
+*.sketch
+*.fig
+
+# Avoiding accidental XD upload
+*.xd
+
+# Avoiding project being littered with annoying .DS_Store files
+.DS_Store
+.prettierignore
