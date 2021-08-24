@@ -1,0 +1,10 @@
+.elements__data{
+  margin: 25px 15px 31px 21px;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: space-between;
+  flex-grow: 1;
+  max-width: 246px;
+  min-height: 23px;
+}
