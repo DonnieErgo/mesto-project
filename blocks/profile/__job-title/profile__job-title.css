@@ -1,0 +1,18 @@
+.profile__job-title{
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  font-size: 18px;
+  line-height: 22px;
+  margin: 16px 0 0 0;
+  padding: 0;
+}
+
+@media screen and (max-width: 879px) {
+  .profile__job-title{
+    font-size: 14px;
+    line-height: 17px;
+    margin-top: 14px;
+    text-align: center;
+  }
+}
