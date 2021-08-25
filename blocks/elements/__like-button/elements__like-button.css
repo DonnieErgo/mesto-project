@@ -8,4 +8,10 @@
   min-width: 22px;
   height: 19px;
   border: 0;
+  transition: opacity ease 0.3s;
+}
+
+.elements__like-button:hover{
+  cursor: pointer;
+  opacity: 0.5;
 }

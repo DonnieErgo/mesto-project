@@ -14,7 +14,6 @@
 
     <header class="header">
       <img src="./images/logo-white.png" alt="логотип Место" class="header__logo">
-
     </header>
 
     <main class="main">
@@ -31,7 +30,19 @@
         <button type="button" class="profile__add-button"></button>
       </section>
 
-      <section class="popup"></section>
+      <section class="popup popup_active">
+        <div class="popup__container">
+          <button type="button" class="popup__close-button"></button>
+          <h2 class="popup__form-title">Редактировать профиль</h2>
+          <form name="form-profile-edit" class="popup__form">
+            <fieldset class="popup__profile-info">
+              <input type="text" name="full-name" placeholder="Жак-Ив Кусто" class="popup__form-input">
+              <input type="text" name="title" placeholder="Исследователь Океана" class="popup__form-input">
+            </fieldset>
+          </form>
+          <button type="submit" class="popup__button-save">Сохранить</button>
+        </div>
+      </section>
 
       <section class="elements">
         <article class="elements__element">
