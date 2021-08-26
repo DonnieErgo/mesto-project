@@ -4,7 +4,7 @@
   overflow: hidden;
   font-size: 18px;
   line-height: 22px;
-  margin: 16px 0 0 0;
+  margin: 0;
   padding: 0;
 }
 
@@ -12,7 +12,6 @@
   .profile__job-title{
     font-size: 14px;
     line-height: 17px;
-    margin-top: 14px;
-    text-align: center;
+    margin-bottom: 33px;
   }
 }
