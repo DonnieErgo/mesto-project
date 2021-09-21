@@ -3,7 +3,7 @@ const addButton = document.querySelector('.profile__add-button')
 const closeButton = document.querySelectorAll('.popup__close-button')
 const popupEdit = document.querySelector('.edit-name')
 const popupAdd = document.querySelector('.add-card')
-const popupZoom = document.querySelector('.zoom-card')
+const popupZoom = document.querySelector('.card-zoom')
 const editForm = document.querySelector('.edit-form')
 const nameInput = document.querySelector('.input-name')
 const jobInput = document.querySelector('.input-job')
@@ -35,9 +35,11 @@ editButton.addEventListener('click', () => openPopup(popupEdit))
 // Открываем попап Add
 addButton.addEventListener('click', () => openPopup(popupAdd))
 
+
+
 // Обработчик отправки формы Edit
-function editFormSubmit (evt) {
-  evt.preventDefault();
+function editFormSubmit (e) {
+  e.preventDefault();
   const name = editForm.querySelector('.input-name').value
   const job = editForm.querySelector('.input-title').value
   const profileName = document.querySelector('.profile__name')
@@ -53,40 +55,40 @@ editForm.addEventListener('submit', editFormSubmit);
 // Массив с дефолтными карточками
 const initialCards = [
   {
-    name: 'Архыз',
-    link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/arkhyz.jpg'
+    name: 'Пушишка',
+    link: 'https://images.unsplash.com/photo-1548247416-ec66f4900b2e?ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8Y2F0fGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'
   },
   {
-    name: 'Челябинская область',
-    link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/chelyabinsk-oblast.jpg'
+    name: 'Бабочка на носике',
+    link: 'https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80'
   },
   {
-    name: 'Иваново',
-    link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/ivanovo.jpg'
+    name: 'Сонный кот',
+    link: 'https://images.unsplash.com/photo-1511044568932-338cba0ad803?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1100&q=80'
   },
   {
-    name: 'Камчатка',
-    link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/kamchatka.jpg'
+    name: 'Мау?',
+    link: 'https://images.unsplash.com/photo-1520315342629-6ea920342047?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80'
   },
   {
-    name: 'Холмогорский район',
-    link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/kholmogorsky-rayon.jpg'
+    name: 'Котик',
+    link: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
   },
   {
-    name: 'Байкал',
-    link: 'https://pictures.s3.yandex.net/frontend-developer/cards-compressed/baikal.jpg'
+    name: 'Не покормили',
+    link: 'https://images.unsplash.com/photo-1501820488136-72669149e0d4?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1100&q=80'
   }
   ];
 
 // Обработчик «отправки» формы Add
-function addFormSubmit (evt) {
-  evt.preventDefault();
+function addFormSubmit(e) {
+  e.preventDefault();
   const cardName = addForm.querySelector('.input-imgname')
   const cardSrc = addForm.querySelector('.input-link')
 
   createElement(cardName.value, cardSrc.value)
 
-  evt.target.reset();
+  e.target.reset();
   closePopup(popupAdd)
 }
 
@@ -108,15 +110,21 @@ function createElement (elementInfo, elementSrc) {
 }
 
 // Функция кнопки like
-function likeButtonToggle (event) {
-    event.target.classList.toggle('elements__like-button_active')
+function likeButtonToggle (e) {
+    e.target.classList.toggle('elements__like-button_active')
 }
 
 // Функция кнопки delete
-function deleteButtonToggle (event) {
-    event.target.closest('.elements__element').remove()
+function deleteButtonToggle (e) {
+    e.target.closest('.elements__element').remove()
 }
 
 // Слушатель отправки формы Add
-addForm.addEventListener('submit', addFormSubmit);
+addForm.addEventListener('submit', addFormSubmit)
 
+// Добавляем дефолтные карточки
+initialCards.forEach(function(item) {
+  const initialCardsName = item.name
+  const initialCardsLink = item.link
+  createElement(initialCardsName, initialCardsLink);
+})
