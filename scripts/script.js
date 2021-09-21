@@ -5,11 +5,8 @@ const popupEdit = document.querySelector('.edit-name')
 const popupAdd = document.querySelector('.add-card')
 const popupZoom = document.querySelector('.card-zoom')
 const editForm = document.querySelector('.edit-form')
-const nameInput = document.querySelector('.input-name')
-const jobInput = document.querySelector('.input-job')
 const addForm = document.querySelector('.add-form')
 const cardContainer = document.querySelector('.elements')
-
 
 // Закрываем попапы по клику на крестик
 closeButton.forEach (function(item) {
@@ -127,4 +124,21 @@ initialCards.forEach(function(item) {
   const initialCardsName = item.name
   const initialCardsLink = item.link
   createElement(initialCardsName, initialCardsLink);
+})
+
+// Создание попапа с картинкой
+function cardPopup (cardUrl, cardCaption){
+  const cardZoom = document.querySelector('.card-zoom')
+  cardZoom.querySelector('.popup__img').src = cardUrl;
+  cardZoom.querySelector('.popup__img').alt = cardCaption;
+  cardZoom.querySelector('.popup__caption').textContent = cardCaption;
+  openPopup(popupZoom)
+}
+
+// Слушатель для попапа с картинкой
+document.querySelector('.elements').addEventListener('click', function (e) {
+  const target = e.target
+  if (target.closest('.elements__image')) {
+    cardPopup(target.src, target.alt)
+  }
 })
