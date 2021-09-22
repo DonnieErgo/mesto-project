@@ -1,6 +1,6 @@
 const editButton = document.querySelector('.profile__edit-button')
 const addButton = document.querySelector('.profile__add-button')
-const closeButton = document.querySelectorAll('.popup__close-button')
+const closeButtons = document.querySelectorAll('.popup__close-button')
 const popupEdit = document.querySelector('.edit-name')
 const popupAdd = document.querySelector('.add-card')
 const popupZoom = document.querySelector('.card-zoom')
@@ -9,10 +9,10 @@ const addForm = document.querySelector('.add-form')
 const cardContainer = document.querySelector('.elements')
 
 // Закрываем попапы по клику на крестик
-closeButton.forEach (function(item) {
+closeButtons.forEach (function(item) {
   item.addEventListener('click', function(e) {
     const parentModal = this.closest('.popup');
-    parentModal.classList.remove('popup_active');
+    closePopup (parentModal)
   });
 });
 
@@ -32,8 +32,6 @@ editButton.addEventListener('click', () => openPopup(popupEdit))
 // Открываем попап Add
 addButton.addEventListener('click', () => openPopup(popupAdd))
 
-
-
 // Обработчик отправки формы Edit
 function editFormSubmit (e) {
   e.preventDefault();
@@ -49,61 +47,47 @@ function editFormSubmit (e) {
 // Слушатель отправки формы Edit
 editForm.addEventListener('submit', editFormSubmit);
 
-// Массив с дефолтными карточками
-const initialCards = [
-  {
-    name: 'Пушишка',
-    link: 'https://images.unsplash.com/photo-1548247416-ec66f4900b2e?ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8Y2F0fGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'
-  },
-  {
-    name: 'Бабочка на носике',
-    link: 'https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80'
-  },
-  {
-    name: 'Сонный кот',
-    link: 'https://images.unsplash.com/photo-1511044568932-338cba0ad803?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1100&q=80'
-  },
-  {
-    name: 'Чешут кицу',
-    link: 'https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1100&q=80'
-  },
-  {
-    name: 'Котик',
-    link: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-  },
-  {
-    name: 'Не покормили',
-    link: 'https://images.unsplash.com/photo-1501820488136-72669149e0d4?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1100&q=80'
-  }
-  ];
-
 // Обработчик «отправки» формы Add
 function addFormSubmit(e) {
   e.preventDefault();
-  const cardName = addForm.querySelector('.input-imgname')
-  const cardSrc = addForm.querySelector('.input-link')
 
-  createElement(cardName.value, cardSrc.value)
+  const cardData = {
+    name: document.querySelector('.input-imgname').value,
+    link: document.querySelector('.input-link').value
+  }
 
-  e.target.reset();
+  // Собираем карточку с данными из инпутов
+  const card = createCard(cardData)
+
+  // Добавляем карточку на страницу
+  addCard(card)
+
+  addForm.reset()
   closePopup(popupAdd)
 }
 
-// Создание новой карточки
-function createElement (elementInfo, elementSrc) {
-  const addCardTemplate = document.querySelector('#element-template').content
-  const element = addCardTemplate.querySelector('.elements__element').cloneNode(true);
-
-  element.querySelector('.elements__image').src = elementSrc;
-  element.querySelector('.elements__image').alt = elementInfo;
-  element.querySelector('.elements__header').textContent = elementInfo;
-
-  // Добавление слушателей кнопок like/delete
+// Функция добавления новой карточки на страницу
+function addCard (element) {
+  
+  // Добавление слушателей кнопок like/delete и активации попапа с увеличенной картинкой
   element.querySelector('.elements__like-button').addEventListener('click', likeButtonToggle)
   element.querySelector('.elements__delete-button').addEventListener('click', deleteButtonToggle)
+  document.querySelector('.elements').addEventListener('click', picturePopupOpener)
 
   // Добавляем новую карточку в начало списка
   cardContainer.prepend(element)
+}
+
+// Функция создания карточками
+function createCard(cardData) {
+  const addCardTemplate = document.querySelector('#element-template').content
+  const element = addCardTemplate.querySelector('.elements__element').cloneNode(true);
+
+  element.querySelector('.elements__image').src = cardData.link;
+  element.querySelector('.elements__image').alt = cardData.name;
+  element.querySelector('.elements__header').textContent = cardData.name;
+
+  return element
 }
 
 // Функция кнопки like
@@ -116,14 +100,21 @@ function deleteButtonToggle (e) {
     e.target.closest('.elements__element').remove()
 }
 
+// Функция открытия попапа
+function picturePopupOpener (e) {
+  const target = e.target
+  if (target.closest('.elements__image')) {
+    cardPopup(target.src, target.alt)
+  }
+}
+
 // Слушатель отправки формы Add
 addForm.addEventListener('submit', addFormSubmit)
 
 // Добавляем дефолтные карточки
 initialCards.forEach(function(item) {
-  const initialCardsName = item.name
-  const initialCardsLink = item.link
-  createElement(initialCardsName, initialCardsLink);
+  const initialCard = createCard(item)
+  addCard(initialCard);
 })
 
 // Создание попапа с картинкой
@@ -134,11 +125,3 @@ function cardPopup (cardUrl, cardCaption){
   cardZoom.querySelector('.popup__caption').textContent = cardCaption;
   openPopup(popupZoom)
 }
-
-// Слушатель для попапа с картинкой
-document.querySelector('.elements').addEventListener('click', function (e) {
-  const target = e.target
-  if (target.closest('.elements__image')) {
-    cardPopup(target.src, target.alt)
-  }
-})
