@@ -8,7 +8,7 @@ const editForm = document.querySelector('.edit-form')
 const addForm = document.querySelector('.add-form')
 
 // Закрываем попапы по клику на крестик
-closeButtons.forEach (function(item) {
+closeButtons.forEach ((item) => {
   item.addEventListener('click', function(e) {
     const parentModal = this.closest('.popup');
     closePopup (parentModal)
@@ -107,7 +107,7 @@ function handleCardImageClick (e) {
 addForm.addEventListener('submit', addFormSubmit)
 
 // Добавляем дефолтные карточки
-initialCards.forEach(function(item) {
+initialCards.forEach((item) => {
   const initialCard = createCard(item)
   addCard(initialCard);
 })
