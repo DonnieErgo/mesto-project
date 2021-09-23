@@ -6,7 +6,6 @@ const popupAdd = document.querySelector('.add-card')
 const popupZoom = document.querySelector('.card-zoom')
 const editForm = document.querySelector('.edit-form')
 const addForm = document.querySelector('.add-form')
-const cardContainer = document.querySelector('.elements')
 
 // Закрываем попапы по клику на крестик
 closeButtons.forEach (function(item) {
@@ -23,7 +22,7 @@ function openPopup(popupElement) {
 
 // Функция закрытия попапа
 function closePopup (popupName) {
-  popupName.classList.remove("popup_active");
+  popupName.classList.remove('popup_active');
 }
 
 // Открываем попап Edit
@@ -68,13 +67,7 @@ function addFormSubmit(e) {
 
 // Функция добавления новой карточки на страницу
 function addCard (element) {
-  
-  // Добавление слушателей кнопок like/delete и активации попапа с увеличенной картинкой
-  element.querySelector('.elements__like-button').addEventListener('click', likeButtonToggle)
-  element.querySelector('.elements__delete-button').addEventListener('click', deleteButtonToggle)
-  document.querySelector('.elements').addEventListener('click', picturePopupOpener)
-
-  // Добавляем новую карточку в начало списка
+  const cardContainer = document.querySelector('.elements')
   cardContainer.prepend(element)
 }
 
@@ -82,10 +75,12 @@ function addCard (element) {
 function createCard(cardData) {
   const addCardTemplate = document.querySelector('#element-template').content
   const element = addCardTemplate.querySelector('.elements__element').cloneNode(true);
-
   element.querySelector('.elements__image').src = cardData.link;
   element.querySelector('.elements__image').alt = cardData.name;
   element.querySelector('.elements__header').textContent = cardData.name;
+
+  element.querySelector('.elements__like-button').addEventListener('click', likeButtonToggle)
+  element.querySelector('.elements__delete-button').addEventListener('click', deleteButtonToggle)
 
   return element
 }
@@ -101,10 +96,10 @@ function deleteButtonToggle (e) {
 }
 
 // Функция открытия попапа
-function picturePopupOpener (e) {
+function handleCardImageClick (e) {
   const target = e.target
   if (target.closest('.elements__image')) {
-    cardPopup(target.src, target.alt)
+    openCardPopup(target.src, target.alt)
   }
 }
 
@@ -118,10 +113,13 @@ initialCards.forEach(function(item) {
 })
 
 // Создание попапа с картинкой
-function cardPopup (cardUrl, cardCaption){
+function openCardPopup (cardUrl, cardCaption){
   const cardZoom = document.querySelector('.card-zoom')
   cardZoom.querySelector('.popup__img').src = cardUrl;
   cardZoom.querySelector('.popup__img').alt = cardCaption;
   cardZoom.querySelector('.popup__caption').textContent = cardCaption;
   openPopup(popupZoom)
 }
+
+// Слушатель активации попапа с увеличенной картинкой
+document.querySelector('.elements').addEventListener('click', handleCardImageClick)
