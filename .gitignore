@@ -9,3 +9,8 @@
 .DS_Store
 .prettierignore
 .idea
+
+# Else
+.vscode
+node_modules
+dist

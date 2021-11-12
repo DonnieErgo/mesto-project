@@ -6,32 +6,41 @@ const popupAdd = document.querySelector('.add-card')
 const popupZoom = document.querySelector('.card-zoom')
 const editForm = document.querySelector('.edit-form')
 const addForm = document.querySelector('.add-form')
+const popups = document.querySelectorAll('.popup')
 
-// Закрываем попапы по клику на крестик
-closeButtons.forEach ((item) => {
-  item.addEventListener('click', function(e) {
-    const parentModal = this.closest('.popup');
-    closePopup (parentModal)
-  });
-});
+// Слушатель с закрытием модальных окон по клику на крестик
+closeButtons.forEach (el => el.addEventListener('click', closePopup));
 
-// Функция открытия попапа
+// Функция открытия модального окна
 function openPopup(popupElement) {
   popupElement.classList.add('popup_active');
+  document.addEventListener('keydown', closeOnEsc);
 }
 
-// Функция закрытия попапа
-function closePopup (popupName) {
-  popupName.classList.remove('popup_active');
+// Функция закрытия модального окна
+function closePopup() {
+  popups.forEach(el => el.classList.remove('popup_active'));
+  document.removeEventListener('keydown', closeOnEsc);
 }
 
-// Открываем попап Edit
+// Функция закрытия модального окна при нажатии "Escape"
+function closeOnEsc(e) {
+  if (e.key === 'Escape') closePopup();
+}
+
+// Слушатель и функция закрытия модальных окон при клике вне окна
+popups.forEach(el => el.addEventListener('click', function (e) {
+  if (e.target.classList.contains('popup_active')) closePopup();
+  e.stopPropagation();
+}))
+
+// Слушатель открытия модального окна Edit
 editButton.addEventListener('click', () => openPopup(popupEdit))
 
-// Открываем попап Add
+// Слушатель открытия модального окна Add
 addButton.addEventListener('click', () => openPopup(popupAdd))
 
-// Обработчик отправки формы Edit
+// Обработчик "отправки" формы Edit
 function editFormSubmit (e) {
   e.preventDefault();
   const name = editForm.querySelector('.input-name').value
@@ -40,13 +49,13 @@ function editFormSubmit (e) {
   const profileJobTitle = document.querySelector('.profile__job-title')
   profileName.textContent = name
   profileJobTitle.textContent = job
-  closePopup(popupEdit)
+  closePopup()
 }
 
-// Слушатель отправки формы Edit
+// Слушатель "отправки" формы Edit
 editForm.addEventListener('submit', editFormSubmit);
 
-// Обработчик «отправки» формы Add
+// Обработчик "отправки" формы Add
 function addFormSubmit(e) {
   e.preventDefault();
 
@@ -62,7 +71,7 @@ function addFormSubmit(e) {
   addCard(card)
 
   addForm.reset()
-  closePopup(popupAdd)
+  closePopup()
 }
 
 // Функция добавления новой карточки на страницу
@@ -95,7 +104,7 @@ function deleteButtonToggle (e) {
     e.target.closest('.elements__element').remove()
 }
 
-// Функция открытия попапа
+// Функция открытия модального окна с картинкой
 function handleCardImageClick (e) {
   const target = e.target
   if (target.closest('.elements__image')) {
@@ -106,13 +115,13 @@ function handleCardImageClick (e) {
 // Слушатель отправки формы Add
 addForm.addEventListener('submit', addFormSubmit)
 
-// Добавляем дефолтные карточки
+// Добавление дефолтных карточек при открытии страницы
 initialCards.forEach((item) => {
   const initialCard = createCard(item)
   addCard(initialCard);
 })
 
-// Создание попапа с картинкой
+// Создание модального окна с картинкой
 function openCardPopup (cardUrl, cardCaption){
   const cardZoom = document.querySelector('.card-zoom')
   cardZoom.querySelector('.popup__img').src = cardUrl;
@@ -121,5 +130,5 @@ function openCardPopup (cardUrl, cardCaption){
   openPopup(popupZoom)
 }
 
-// Слушатель активации попапа с увеличенной картинкой
+// Слушатель открытия модального окна с увеличенной картинкой
 document.querySelector('.elements').addEventListener('click', handleCardImageClick)
