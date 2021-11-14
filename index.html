@@ -12,12 +12,14 @@
 
   <body class="page">
 
+    <!-- Header -->
     <header class="header">
       <img src="./images/logo.svg" alt="логотип Место" class="header__logo">
     </header>
 
     <main class="main">
 
+      <!-- Profile -->
       <section class="profile">
         <img src="./images/profile-pic.jpg" alt="фото" class="profile__avatar">
         <div class="profile__text-info">
@@ -30,6 +32,7 @@
         <button type="button" class="profile__add-button"></button>
       </section>
 
+      <!-- Elements -->
       <section class="elements">
         <template id="element-template">
           <article class="elements__element">
@@ -43,34 +46,56 @@
         </template>
       </section>
 
+      <!-- Profile popup -->
       <section class="popup edit-name">
         <div class="popup__container">
           <button type="button" class="popup__close-button"></button>
           <h2 class="popup__form-title">Редактировать профиль</h2>
-          <form name="profile" class="popup__form edit-form">
+          <form name="profile" class="popup__form edit-form" novalidate>
             <fieldset class="popup__profile-info">
-              <input type="text" name="name" placeholder="Ваше имя" class="popup__form-input input-name" required>
-              <input type="text" name="title" placeholder="Род занятий" class="popup__form-input input-title" required>
+              <div class="popup__input-wrap">
+                <input type="text" name="name" placeholder="Ваше имя" class="popup__form-input input-name"
+                id="name-input"
+                minlength="2" maxlength="40" required>
+                <span class="popup__error name-input-error"></span>
+              </div>
+              <div class="popup__input-wrap">
+                <input type="text" name="title" placeholder="О себе" class="popup__form-input input-title"
+                id="title-input"
+                minlength="2" maxlength="200" required>
+                <span class="popup__error title-input-error"></span>
+              </div>
             </fieldset>
             <button type="submit" class="popup__button-save">Сохранить</button>
           </form>
         </div>
       </section>
 
+      <!-- Add card popup -->
       <section class="popup add-card">
         <div class="popup__container">
           <button type="button" class="popup__close-button"></button>
           <h2 class="popup__form-title">Новое место</h2>
-          <form name="card" class="popup__form add-form">
+          <form name="card" class="popup__form add-form" novalidate>
             <fieldset class="popup__profile-info">
-              <input type="text" name="picname" placeholder="Название" class="popup__form-input input-imgname" required>
-              <input type="url" name="link" placeholder="Ссылка на картинку" class="popup__form-input input-link" required>
+              <div class="popup__input-wrap">
+                <input type="text" name="picname" placeholder="Название" class="popup__form-input input-imgname"
+                id="picname-input"
+                minlength="2" maxlength="30" required>
+                <span class="popup__error picname-input-error"></span>
+              </div>
+              <div class="popup__input-wrap">
+                <input type="url" name="link" placeholder="Ссылка на картинку" class="popup__form-input input-link"
+                id="link-input" required>
+                <span class="popup__error link-input-error"></span>
+              </div>
             </fieldset>
             <button type="submit" class="popup__button-save">Создать</button>
           </form>
         </div>
       </section>
 
+      <!-- Card popup -->
       <section class="popup card-zoom">
         <figure class="popup__zoom-container">
           <button type="button" class="popup__close-button"></button>
@@ -81,10 +106,14 @@
 
     </main>
 
+    <!-- Footer -->
     <footer class="footer">
       <p class="footer__copyright">&copy; 2021. Mikhail Nenashev</p>
     </footer>
 
+
     <script src="./scripts/initial-cards.js"></script>
+    <script src="./scripts/validate.js"></script>
     <script src="./scripts/script.js"></script>
+    <script src="./scripts/index.js"></script>
   </body>

@@ -1,0 +1,8 @@
+.popup__input-wrap{
+  position: relative;
+  margin-bottom: 29px;
+}
+
+.popup__input-wrap:last-child{
+  margin-bottom: 0;
+}
