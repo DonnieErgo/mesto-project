@@ -1,4 +1,4 @@
-const enableValidation = config => {
+export const enableValidation = config => {
 
 // Проверка формы на валидность
   const isFormValid = (inputList) => {
@@ -26,6 +26,17 @@ const enableValidation = config => {
     errorElement.textContent = inputElement.validationMessage;
   }
 
+  // Проверка и отображение ошибок
+  const checkInputValidity = (inputElement, formElement) => {
+    if (inputElement.validity.valid) {
+  // Если валидно - прячем ошибку
+    hideInputError(inputElement, formElement)
+  } else {
+  // Если нет - показываем
+    showInputError(inputElement, formElement)
+  }
+};
+
 // Переключение состояния кнопки
   const toggleButtonState = (submitButton, inputList) => {
     if (isFormValid(inputList)) {
@@ -35,36 +46,12 @@ const enableValidation = config => {
     }
   };
 
-// Проверка и отображение ошибок
-  const checkInputValidity = (inputElement, formElement) => {
-    if (inputElement.validity.valid) {
-    // Если валидно - прячем ошибку
-      hideInputError(inputElement, formElement)
-    } else {
-    // Если нет - показываем
-      showInputError(inputElement, formElement)
-    }
-  };
-
 // Убираем стандартное поведение при сабмите
   const setEventListeners = formElement => {
     formElement.addEventListener('submit', e => {
       e.preventDefault()
+      toggleButtonState(submitButton, inputList);
     })
-
-  //
-  formElement.validate = function () {
-    inputList.forEach(inputElement => {
-      checkInputValidity(inputElement, formElement)
-    })
-    toggleButtonState(submitButton, inputList)
-  }
-
-  // Чистим форму после закрытия
-  formElement.resetValidate = function () {
-    formElement.reset()
-    toggleButtonState(submitButton, inputList)
-  }
 
   // Находим все инпуты для каждой формы
     const inputList = Array.from(formElement.querySelectorAll(config.inputSelector));
@@ -87,10 +74,10 @@ const enableValidation = config => {
   }
 
   // Находим все формы
-    const formList = Array.from(document.querySelectorAll(config.formSelector));
+  const formList = Array.from(document.querySelectorAll(config.formSelector));
 
-    formList.forEach(formElement => {
-    // Ставим слушатели на каждую форму
-      setEventListeners(formElement)
-    })
+  formList.forEach(formElement => {
+  // Ставим слушатели на каждую форму
+    setEventListeners(formElement)
+  })
 }

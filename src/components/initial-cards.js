@@ -1,5 +1,5 @@
 // Массив с дефолтными карточками
-const initialCards = [
+export const initialCards = [
   {
     name: 'Пушишка',
     link: 'https://images.unsplash.com/photo-1548247416-ec66f4900b2e?ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8Y2F0fGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'
