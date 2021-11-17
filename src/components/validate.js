@@ -45,7 +45,7 @@ const toggleButtonState = (submitButton, inputList) => {
 };
 
 // Убираем стандартное поведение при сабмите
-export const setEventListeners = (formElement, enableValidation) => {
+const setEventListeners = (formElement, enableValidation) => {
   formElement.addEventListener('submit', e => {
     e.preventDefault()
     toggleButtonState(submitButton, inputList);
@@ -59,10 +59,11 @@ export const setEventListeners = (formElement, enableValidation) => {
 
   // Ресетаем валидацию - используется в попапах
   formElement.validate = function () {
-    inputList.forEach(inputElement => {
-      checkInputValidity(inputElement, formElement, enableValidation)
-    })
     formElement.reset()
+    inputList.forEach(inputElement => {
+      hideInputError(inputElement, formElement, enableValidation)
+    })
+    toggleButtonState(submitButton, inputList)
   }
 
   // Добавляем слушатели для каждого инпута

@@ -20,6 +20,7 @@ export function editFormSubmit (e) {
 export function openPopup(popupElement) {
   popupElement.classList.add('popup_active');
   document.addEventListener('keydown', closeOnEsc);
+  popupElement.querySelector('.popup__form').validate()
 }
 
 // Функция закрытия модального окна при нажатии "Escape"
@@ -29,7 +30,6 @@ function closeOnEsc(e) {
 
 // Функция закрытия модального окна
 export function closePopup() {
-  document.querySelector('.popup_active .popup__form').validate()
   document.querySelector('.popup_active').classList.remove('popup_active');
   document.removeEventListener('keydown', closeOnEsc);
 }
