@@ -1,9 +1,7 @@
 import {editForm} from './index.js';
-import {enableValidation} from './validate.js';
 
 const closeButtons = document.querySelectorAll('.popup__close-button')
 const popups = document.querySelectorAll('.popup')
-const forms = document.querySelectorAll('.popup__form')
 
 // Обработчик "отправки" формы Edit
 export function editFormSubmit (e) {
@@ -31,10 +29,9 @@ function closeOnEsc(e) {
 
 // Функция закрытия модального окна
 export function closePopup() {
-  popups.forEach(el => el.classList.remove('popup_active'));
-  forms.forEach(el => el.reset());
+  document.querySelector('.popup_active .popup__form').validate()
+  document.querySelector('.popup_active').classList.remove('popup_active');
   document.removeEventListener('keydown', closeOnEsc);
-
 }
 
 // Слушатель с закрытием модальных окон по клику на крестик

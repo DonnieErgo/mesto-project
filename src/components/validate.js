@@ -1,83 +1,89 @@
-export const enableValidation = config => {
-
 // Проверка формы на валидность
-  const isFormValid = (inputList) => {
-    return inputList.every(inputElement => inputElement.validity.valid)
-  }
+const isFormValid = (inputList) => {
+  return inputList.every(inputElement => inputElement.validity.valid)
+}
 
 // Находим нужный span с ошибкой
-  const getErrorElement = (inputElement, formElement) => {
-    return formElement.querySelector(`.${inputElement.id}-error`)
-  }
+const getErrorElement = (inputElement, formElement) => {
+  return formElement.querySelector(`.${inputElement.id}-error`)
+}
 
 // Прячем ошибку
-  const hideInputError = (inputElement, formElement) => {
-    const errorElement = getErrorElement(inputElement, formElement)
-    inputElement.classList.remove(config.inputErrorClass)
-    errorElement.classList.remove(config.errorClass)
-    errorElement.textContent = '';
-  }
+const hideInputError = (inputElement, formElement, enableValidation) => {
+  const errorElement = getErrorElement(inputElement, formElement)
+  inputElement.classList.remove(enableValidation.inputErrorClass)
+  errorElement.classList.remove(enableValidation.errorClass)
+  errorElement.textContent = '';
+}
 
 // Показываем ошибку
-  const showInputError = (inputElement, formElement) => {
-    const errorElement = getErrorElement(inputElement, formElement)
-    inputElement.classList.add(config.inputErrorClass)
-    errorElement.classList.add(config.errorClass)
-    errorElement.textContent = inputElement.validationMessage;
-  }
+const showInputError = (inputElement, formElement, enableValidation) => {
+  const errorElement = getErrorElement(inputElement, formElement)
+  inputElement.classList.add(enableValidation.inputErrorClass)
+  errorElement.classList.add(enableValidation.errorClass)
+  errorElement.textContent = inputElement.validationMessage;
+}
 
-  // Проверка и отображение ошибок
-  const checkInputValidity = (inputElement, formElement) => {
-    if (inputElement.validity.valid) {
+// Проверка и отображение ошибок
+const checkInputValidity = (inputElement, formElement, enableValidation) => {
+  if (inputElement.validity.valid) {
   // Если валидно - прячем ошибку
-    hideInputError(inputElement, formElement)
+    hideInputError(inputElement, formElement, enableValidation)
   } else {
   // Если нет - показываем
-    showInputError(inputElement, formElement)
+    showInputError(inputElement, formElement, enableValidation)
   }
 };
 
 // Переключение состояния кнопки
-  const toggleButtonState = (submitButton, inputList) => {
-    if (isFormValid(inputList)) {
-      submitButton.disabled = false
-    } else {
-      submitButton.disabled = true
-    }
-  };
+const toggleButtonState = (submitButton, inputList) => {
+  if (isFormValid(inputList)) {
+    submitButton.disabled = false
+  } else {
+    submitButton.disabled = true
+  }
+};
 
 // Убираем стандартное поведение при сабмите
-  const setEventListeners = formElement => {
-    formElement.addEventListener('submit', e => {
-      e.preventDefault()
-      toggleButtonState(submitButton, inputList);
-    })
+export const setEventListeners = (formElement, enableValidation) => {
+  formElement.addEventListener('submit', e => {
+    e.preventDefault()
+    toggleButtonState(submitButton, inputList);
+  })
 
   // Находим все инпуты для каждой формы
-    const inputList = Array.from(formElement.querySelectorAll(config.inputSelector));
+  const inputList = Array.from(formElement.querySelectorAll(enableValidation.inputSelector));
 
   // Находим кнопки сабмита
-    const submitButton = formElement.querySelector(config.submitButtonSelector);
+  const submitButton = formElement.querySelector(enableValidation.submitButtonSelector);
 
-  // Добавляем слушатели для каждого инпута
+  // Ресетаем валидацию - используется в попапах
+  formElement.validate = function () {
     inputList.forEach(inputElement => {
-      inputElement.addEventListener('input', () => {
-      // Проверяем валидность инпута
-        checkInputValidity(inputElement, formElement);
-      // Переключение состояния кнопки
-        toggleButtonState(submitButton, inputList);
-      })
+      checkInputValidity(inputElement, formElement, enableValidation)
     })
-
-  // Ставим кнопку в изначальное положение
-    toggleButtonState(submitButton, inputList);
+    formElement.reset()
   }
 
-  // Находим все формы
-  const formList = Array.from(document.querySelectorAll(config.formSelector));
+  // Добавляем слушатели для каждого инпута
+  inputList.forEach(inputElement => {
+    inputElement.addEventListener('input', () => {
+  // Проверяем валидность инпута
+      checkInputValidity(inputElement, formElement, enableValidation);
+  // Переключение состояния кнопки
+      toggleButtonState(submitButton, inputList, enableValidation);
+    })
+  })
 
+  // Ставим кнопку в изначальное положение
+  toggleButtonState(submitButton, inputList, enableValidation);
+}
+
+  // Находим все формы
+export const enableValidation = enableValidation => {
+  const formList = Array.from(document.querySelectorAll(enableValidation.formSelector));
   formList.forEach(formElement => {
   // Ставим слушатели на каждую форму
-    setEventListeners(formElement)
+    setEventListeners(formElement, enableValidation)
   })
 }
