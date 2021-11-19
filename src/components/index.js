@@ -64,6 +64,8 @@ addForm.addEventListener('submit', addFormSubmit)
 
 // Слушатель открытия модального окна Edit
 editButton.addEventListener('click', () => {
+  nameInput.value = profileName.textContent;
+  jobInput.value = profileJobTitle.textContent;
   resetValidation(editInputList, validationConfig, editForm)
   openPopup(popupEdit)
 })
