@@ -2,7 +2,6 @@
 export function resetValidation(inputList, selectors, form) {
   inputList.forEach(inputElement => {
       hideInputError(inputElement, form, selectors)
-      form.reset()
   });
 }
 

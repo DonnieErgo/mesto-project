@@ -1,8 +1,6 @@
 import {openPopup} from "./modal.js";
-import {} from "./index.js";
 
 const popupZoom = document.querySelector('.card-zoom')
-const cardContainer = document.querySelector('.elements')
 const cardZoomImg = document.querySelector('.card-zoom .popup__img')
 const cardZoomCaption = document.querySelector('.card-zoom .popup__caption')
 
@@ -22,11 +20,6 @@ export function createCard(cardData) {
   element.querySelector('.elements__image').addEventListener('click', () => openCardPopup(cardData.link, cardData.name));
 
   return element
-}
-
-// Функция добавления новой карточки на страницу
-export function addCard (element) {
-  cardContainer.prepend(element)
 }
 
 // Функция кнопки like

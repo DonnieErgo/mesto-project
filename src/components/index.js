@@ -1,6 +1,6 @@
 import '../pages/index.css';
 import {enableValidation, resetValidation} from './validate.js';
-import {createCard, addCard} from "./cards.js";
+import {createCard} from "./cards.js";
 import {openPopup, closePopup} from "./modal.js";
 import {initialCards} from "./initial-cards.js";
 
@@ -10,14 +10,15 @@ const popupEdit = document.querySelector('.edit-name')
 const popupAdd = document.querySelector('.add-card')
 const editButton = document.querySelector('.profile__edit-button')
 const addButton = document.querySelector('.profile__add-button')
-const name = editForm.querySelector('.input-name')
-const job = editForm.querySelector('.input-title')
+const nameInput = editForm.querySelector('.input-name')
+const jobInput = editForm.querySelector('.input-title')
 const profileName = document.querySelector('.profile__name')
 const profileJobTitle = document.querySelector('.profile__job-title')
 const closeButtons = document.querySelectorAll('.popup__close-button')
 const popups = document.querySelectorAll('.popup')
 const imgNameInput = document.querySelector('.input-imgname')
 const linkInput = document.querySelector('.input-link')
+const cardContainer = document.querySelector('.elements')
 const editInputList = Array.from(document.querySelectorAll('.edit-name .popup__form-input'))
 const addInputList = Array.from(document.querySelectorAll('.add-card .popup__form-input'))
 const validationConfig = {
@@ -31,10 +32,9 @@ const validationConfig = {
 // Обработчик "отправки" формы Edit
 function editFormSubmit (e) {
   e.preventDefault();
-  profileName.textContent = name.value
-  profileJobTitle.textContent = job.value
+  profileName.textContent = nameInput.value
+  profileJobTitle.textContent = jobInput.value
 
-  editForm.reset()
   closePopup()
 }
 
@@ -81,6 +81,11 @@ closeButtons.forEach (el => el.addEventListener('click', closePopup));
 popups.forEach(el => el.addEventListener('click',(e) => {
   if (e.target.classList.contains('popup_active')) closePopup();
 }))
+
+// Функция добавления новой карточки на страницу
+function addCard (element) {
+  cardContainer.prepend(element)
+}
 
 // Добавление дефолтных карточек при открытии страницы
 initialCards.forEach((item) => {
