@@ -88,10 +88,7 @@ export const changeAvatar = (url) => {
   return fetch(`${fetchConfig.baseUrl}/users/me/avatar`, {
     method: 'PATCH',
     headers: fetchConfig.headers,
-    body: JSON.stringify({
-      name: card.name,
-      link: card.link
-    })
+    body: JSON.stringify({avatar: url})
   })
   .then(resCheck)
 }
