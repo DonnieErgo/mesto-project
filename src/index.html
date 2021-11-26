@@ -20,13 +20,13 @@
 
       <!-- Profile -->
       <section class="profile">
-        <img src="<%=require('./images/profile-pic.jpg')%>" alt="фото" class="profile__avatar">
+        <img src="<%=require('./images/profile-pic.png')%>" alt="фото" class="profile__avatar">
         <div class="profile__text-info">
           <div class="profile__wrapper">
-            <h1 class="profile__name">Жак-Ив Кусто</h1>
+            <h1 class="profile__name"></h1>
             <button type="button" class="profile__edit-button"></button>
           </div>
-          <p class="profile__job-title">Исследователь Океана</p>
+          <p class="profile__job-title"></p>
         </div>
         <button type="button" class="profile__add-button"></button>
       </section>
@@ -39,7 +39,10 @@
             <img class="elements__image" alt="фото">
             <div class="elements__data">
               <h3 class="elements__header"></h3>
-              <button type="button" class="elements__like-button"></button>
+              <div class="elements__likes-wrapper">
+                <button type="button" class="elements__like-button"></button>
+                <p class="elements__like-counter"></p>
+              </div>
             </div>
           </article>
         </template>
@@ -65,7 +68,7 @@
                 <span class="popup__error title-input-error"></span>
               </div>
             </fieldset>
-            <button type="submit" class="popup__button-save">Сохранить</button>
+            <button type="submit" class="popup__button-save popup__button-save-edit">Сохранить</button>
           </form>
         </div>
       </section>
@@ -89,7 +92,7 @@
                 <span class="popup__error link-input-error"></span>
               </div>
             </fieldset>
-            <button type="submit" class="popup__button-save">Создать</button>
+            <button type="submit" class="popup__button-save popup__button-save-add">Создать</button>
           </form>
         </div>
       </section>

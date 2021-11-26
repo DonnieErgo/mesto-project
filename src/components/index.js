@@ -2,25 +2,32 @@ import '../pages/index.css';
 import {enableValidation, resetValidation} from './validate.js';
 import {createCard} from "./cards.js";
 import {openPopup, closePopup} from "./modal.js";
-import {initialCards} from "./initial-cards.js";
+import {getProfileData, getCardData, sendProfileData, sendCardData} from "./api.js";
 
 const editForm = document.querySelector('.edit-form')
-const addForm = document.querySelector('.add-form')
 const popupEdit = document.querySelector('.edit-name')
-const popupAdd = document.querySelector('.add-card')
 const editButton = document.querySelector('.profile__edit-button')
-const addButton = document.querySelector('.profile__add-button')
 const nameInput = editForm.querySelector('.input-name')
 const jobInput = editForm.querySelector('.input-title')
 const profileName = document.querySelector('.profile__name')
 const profileJobTitle = document.querySelector('.profile__job-title')
+const profileAvatar = document.querySelector('.profile__avatar')
+const editSaveButton = document.querySelector('.popup__button-save-edit')
+
+const addForm = document.querySelector('.add-form')
+const popupAdd = document.querySelector('.add-card')
+const addButton = document.querySelector('.profile__add-button')
+const imgNameInput = addForm.querySelector('.input-imgname')
+const linkInput = addForm.querySelector('.input-link')
+const cardContainer = document.querySelector('.elements')
+const addSaveButton = document.querySelector('.popup__button-save-add')
+
 const closeButtons = document.querySelectorAll('.popup__close-button')
 const popups = document.querySelectorAll('.popup')
-const imgNameInput = document.querySelector('.input-imgname')
-const linkInput = document.querySelector('.input-link')
-const cardContainer = document.querySelector('.elements')
+
 const editInputList = Array.from(document.querySelectorAll('.edit-name .popup__form-input'))
 const addInputList = Array.from(document.querySelectorAll('.add-card .popup__form-input'))
+
 const validationConfig = {
     formSelector: '.popup__form',
     inputSelector: '.popup__form-input',
@@ -29,11 +36,40 @@ const validationConfig = {
     errorClass: 'popup__error_visible'
 }
 
+let user;
+
+// Запрашиваем даннеые
+Promise.all([getCardData(), getProfileData()])
+.then(([cards, userData]) => {
+  cards.forEach(card => {
+    addCard(createCard(card, userData))
+    addProfileData(userData.name, userData.about, userData.avatar);
+    user = userData;
+  })
+})
+.catch(err => console.log(err))
+
+// Наполняем профиль актуальными данными
+function addProfileData(name, about, avatar) {
+  profileName.textContent = name
+  profileJobTitle.textContent = about
+  profileAvatar.src = avatar
+}
+
 // Обработчик "отправки" формы Edit
-function editFormSubmit (e) {
+function editFormSubmit(e) {
   e.preventDefault();
-  profileName.textContent = nameInput.value
-  profileJobTitle.textContent = jobInput.value
+  editSaveButton.textContent = 'Сохраняем...'
+
+  const data = {
+    name: nameInput.value,
+    about: jobInput.value
+  }
+
+  sendProfileData(data)
+    .then(res => addProfileData(res.name, res.about, res.avatar))
+    .catch(err => console.log(err))
+    .finally(() => editSaveButton.textContent = 'Сохранить')
 
   closePopup()
 }
@@ -41,18 +77,21 @@ function editFormSubmit (e) {
 // Обработчик "отправки" формы Add
 function addFormSubmit(e) {
   e.preventDefault();
+  addSaveButton.textContent = 'Добавляем...'
+
   const cardData = {
     name: imgNameInput.value,
     link: linkInput.value
   }
 
-  // Собираем карточку с данными из инпутов
-  const card = createCard(cardData)
+  sendCardData(cardData)
+    .then(res => {
+      addCard(createCard(res, user))
+      addForm.reset()
+    })
+    .catch(err => console.log(err))
+    .finally(() => addSaveButton.textContent = 'Добавить')
 
-  // Добавляем карточку на страницу
-  addCard(card)
-
-  addForm.reset()
   closePopup()
 }
 
@@ -88,12 +127,6 @@ popups.forEach(el => el.addEventListener('click',(e) => {
 function addCard (element) {
   cardContainer.prepend(element)
 }
-
-// Добавление дефолтных карточек при открытии страницы
-initialCards.forEach((item) => {
-  const initialCard = createCard(item)
-  addCard(initialCard);
-})
 
 // Активируем валидацию
 enableValidation(validationConfig);
