@@ -1,8 +1,8 @@
 import '../pages/index.css';
 import {enableValidation, resetValidation} from './validate.js';
-import {createCard, approveDeleteCard} from "./cards.js";
+import {createCard} from "./cards.js";
 import {openPopup, closePopup} from "./modal.js";
-import {getProfileData, getCardData, sendProfileData, sendCardData, changeAvatar} from "./api.js";
+import {getProfileData, getCardData, sendProfileData, sendCardData, changeAvatar, sendDeleteCard} from "./api.js";
 
 const editForm = document.querySelector('.edit-form')
 const popupEdit = document.querySelector('.edit-name')
@@ -28,7 +28,7 @@ const avatarButton = document.querySelector('.profile__avatar-btn')
 const avatarInput = document.querySelector('.input-avatar')
 const avatarSaveButton = document.querySelector('.popup__button-save-avatar')
 
-export const deleteCardPopup = document.querySelector('.delete-card')
+const deleteCardPopup = document.querySelector('.delete-card')
 const deleteCardPopupButton = document.querySelector('.popup__button-delete-card')
 
 const closeButtons = document.querySelectorAll('.popup__close-button')
@@ -120,6 +120,29 @@ function avatarFormSubmit(e) {
     .finally(() => avatarSaveButton.textContent = 'Сохранить')
 }
 
+// Обработчик нажатия на кнопку удаления карточки
+export function setupDeleteCard(e) {
+  openPopup(deleteCardPopup)
+
+  const card = e.target.closest('.elements__element')
+  const id = card.getAttribute('data-id')
+
+  deleteCardPopup.setAttribute('data-id', id)
+}
+
+// Функция отправки удаления карточки после подтверждения
+function deleteCardApproved() {
+  const id = deleteCardPopup.getAttribute('data-id')
+  const card = document.querySelector(`[data-id='${id}']`)
+
+  sendDeleteCard(id)
+    .then(() => {
+      card.remove()
+      closePopup()
+    })
+    .catch(err => console.log(err))
+}
+
 // Слушатель отправки формы Edit
 editForm.addEventListener('submit', editFormSubmit);
 
@@ -130,7 +153,7 @@ addForm.addEventListener('submit', addFormSubmit)
 avatarForm.addEventListener('submit', avatarFormSubmit)
 
 // Слушатель подтверждени удаления карточки
-deleteCardPopupButton.addEventListener('click', (e) => setupDeleteCard(e))
+deleteCardPopupButton.addEventListener('click', deleteCardApproved)
 
 // Слушатель открытия модального окна Edit
 editButton.addEventListener('click', () => {
@@ -164,21 +187,6 @@ popups.forEach(el => el.addEventListener('click',(e) => {
 function addCard (element) {
   cardContainer.prepend(element)
 }
-
-// Функция настройки попапа с подтверждением удаления карточки
-function setupDeleteCard(e) {
-  const card = document.querySelector('.elements__element')
-  const id = e.target.closest.card.getAttribute('data-id')
-  console.log(id)
-  
-}
-
-// // Функция очистки слушателей с кнопки, здесь клонируется только кнопка удаления т.к. по-другому убрать слушатель в данном случае нельзя
-// export function removeBtnListeners() {
-//   const deleteCardButton = document.querySelector('.popup__button-delete-card')
-//   const newDeleteCardButton = deleteCardButton.cloneNode(true)
-//   deleteCardButton.parentNode.replaceChild(newDeleteCardButton, deleteCardButton)
-// }
 
 // Активируем валидацию
 enableValidation(validationConfig);
