@@ -55,7 +55,7 @@ const toggleButtonState = (submitButton, inputList) => {
 const setEventListeners = (formElement, selectors) => {
   formElement.addEventListener('submit', e => {
     e.preventDefault()
-    toggleButtonState(submitButton, inputList);
+    submitButton.disabled = true
   })
 
   // Находим все инпуты для каждой формы

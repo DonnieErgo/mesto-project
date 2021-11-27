@@ -1,4 +1,5 @@
-import {approveDeleteCard, removeBtnListeners} from "./index.js";
+import {deleteCardPopup, removeBtnListeners} from "./index.js";
+import {approveDeleteCard} from "./cards";
 
 // Функция открытия модального окна
 export function openPopup(popupElement) {
@@ -14,16 +15,19 @@ function closeOnEsc(e) {
 // Функция закрытия модального окна
 export function closePopup() {
   const activePopup = document.querySelector('.popup_active')
-
-  if (activePopup.classList.contains('delete-card')) removeBtnListeners();
-
   activePopup.classList.remove('popup_active');
   document.removeEventListener('keydown', closeOnEsc);
 }
 
 // Функция открытия модального окна с подтверждением удаления карточки
 export function openCardDeletePopup(cardData, element) {
-  openPopup(document.querySelector('.delete-card'))
-  document.addEventListener('keydown', closeOnEsc)
+  openPopup(deleteCardPopup)
   document.querySelector('.popup__button-delete-card').addEventListener('click', () => approveDeleteCard(cardData, element))
+}
+
+// Функция закрытия модального окна удаления карточки с вызовом очистки от слушателей
+export function closeDeleteCardPopup() {
+  removeBtnListeners();
+  deleteCardPopup.classList.remove('popup_active');
+  document.removeEventListener('keydown', closeOnEsc);
 }

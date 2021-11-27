@@ -1,4 +1,4 @@
-import {openPopup, openCardDeletePopup} from "./modal.js";
+import {openPopup, openCardDeletePopup, closeDeleteCardPopup} from "./modal.js";
 import {sendDeleteCard, deleteCardLike, addCardLike} from "./api.js";
 
 const popupZoom = document.querySelector('.card-zoom')
@@ -30,10 +30,14 @@ export function createCard (cardData, userData) {
   return element
 }
 
-// Функция удаления карточки
-export function deleteCard(cardData, element) {
+// Функция удаления карточки после подтверждения
+export function approveDeleteCard(cardData, element) {
   sendDeleteCard(cardData._id)
-  element.remove()
+  .then(() => {
+    element.remove()
+    closeDeleteCardPopup()
+  })
+  .catch(err => console.log(err))
 }
 
 // Функция кнопки like
@@ -48,7 +52,7 @@ function likeToggle (evt, cardData, likeCounter) {
         if (res.likes.length > 0) likeCounter.textContent = res.likes.length
         else likeCounter.textContent = ''
       })
-      .catch(err => console.log(err))
+
   } else {
     addCardLike(id)
       .then(res => {
