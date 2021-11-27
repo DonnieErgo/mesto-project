@@ -19,5 +19,4 @@
 
 Автор - Михаил Ненашев
 
-*Ссылка на GitHub Pages*
-https://donnieergo.github.io/mesto-project/
+*Ссылка на GitHub Pages -* https://donnieergo.github.io/mesto-project/
