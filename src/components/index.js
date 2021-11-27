@@ -1,6 +1,6 @@
 import '../pages/index.css';
 import {enableValidation, resetValidation} from './validate.js';
-import {createCard} from "./cards.js";
+import {createCard, approveDeleteCard} from "./cards.js";
 import {openPopup, closePopup} from "./modal.js";
 import {getProfileData, getCardData, sendProfileData, sendCardData, changeAvatar} from "./api.js";
 
@@ -29,6 +29,7 @@ const avatarInput = document.querySelector('.input-avatar')
 const avatarSaveButton = document.querySelector('.popup__button-save-avatar')
 
 export const deleteCardPopup = document.querySelector('.delete-card')
+const deleteCardPopupButton = document.querySelector('.popup__button-delete-card')
 
 const closeButtons = document.querySelectorAll('.popup__close-button')
 const popups = document.querySelectorAll('.popup')
@@ -128,6 +129,9 @@ addForm.addEventListener('submit', addFormSubmit)
 // Слушатель отправки формы Change
 avatarForm.addEventListener('submit', avatarFormSubmit)
 
+// Слушатель подтверждени удаления карточки
+deleteCardPopupButton.addEventListener('click', (e) => setupDeleteCard(e))
+
 // Слушатель открытия модального окна Edit
 editButton.addEventListener('click', () => {
   nameInput.value = profileName.textContent;
@@ -161,12 +165,20 @@ function addCard (element) {
   cardContainer.prepend(element)
 }
 
-// Функция очистки слушателей с кнопки, здесь клонируется только кнопка удаления т.к. по-другому убрать слушатель в данном случае нельзя
-export function removeBtnListeners() {
-  const deleteCardButton = document.querySelector('.popup__button-delete-card')
-  const newDeleteCardButton = deleteCardButton.cloneNode(true)
-  deleteCardButton.parentNode.replaceChild(newDeleteCardButton, deleteCardButton)
+// Функция настройки попапа с подтверждением удаления карточки
+function setupDeleteCard(e) {
+  const card = document.querySelector('.elements__element')
+  const id = e.target.closest.card.getAttribute('data-id')
+  console.log(id)
+  
 }
+
+// // Функция очистки слушателей с кнопки, здесь клонируется только кнопка удаления т.к. по-другому убрать слушатель в данном случае нельзя
+// export function removeBtnListeners() {
+//   const deleteCardButton = document.querySelector('.popup__button-delete-card')
+//   const newDeleteCardButton = deleteCardButton.cloneNode(true)
+//   deleteCardButton.parentNode.replaceChild(newDeleteCardButton, deleteCardButton)
+// }
 
 // Активируем валидацию
 enableValidation(validationConfig);
