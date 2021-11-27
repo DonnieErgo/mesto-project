@@ -1,4 +1,4 @@
-import {openPopup} from "./modal.js";
+import {openPopup, openCardDeletePopup} from "./modal.js";
 import {sendDeleteCard, deleteCardLike, addCardLike} from "./api.js";
 
 const popupZoom = document.querySelector('.card-zoom')
@@ -24,16 +24,16 @@ export function createCard (cardData, userData) {
   if (cardData.likes.some(el => el._id === userData._id)) likeButton.classList.add('elements__like-button_active')
 
   likeButton.addEventListener('click', (evt) => likeToggle(evt, cardData, likeCounter))
-  deleteButton.addEventListener('click', () => deleteCard(cardData, deleteButton))
+  deleteButton.addEventListener('click', () => openCardDeletePopup(cardData, element))
   elementImage.addEventListener('click', () => openCardPopup(cardData))
 
   return element
 }
 
 // Функция удаления карточки
-function deleteCard (cardData, deleteButton) {
+export function deleteCard(cardData, element) {
   sendDeleteCard(cardData._id)
-  deleteButton.closest('.elements__element').remove()
+  element.remove()
 }
 
 // Функция кнопки like

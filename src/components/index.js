@@ -1,6 +1,6 @@
 import '../pages/index.css';
 import {enableValidation, resetValidation} from './validate.js';
-import {createCard} from "./cards.js";
+import {createCard, deleteCard} from "./cards.js";
 import {openPopup, closePopup} from "./modal.js";
 import {getProfileData, getCardData, sendProfileData, sendCardData, changeAvatar} from "./api.js";
 
@@ -62,6 +62,8 @@ function addProfileData(name, about, avatar) {
   profileJobTitle.textContent = about
   profileAvatar.src = avatar
 }
+
+//
 
 // Обработчик отправки формы Edit
 function editFormSubmit(e) {
@@ -158,6 +160,19 @@ popups.forEach(el => el.addEventListener('click',(e) => {
 // Функция добавления новой карточки на страницу
 function addCard (element) {
   cardContainer.prepend(element)
+}
+
+// Функция удаления карточки после подтверждения
+export function approveDeleteCard(cardData, element) {
+  deleteCard(cardData, element)
+  closePopup()
+}
+
+// Функция очистки слушателей с кнопки
+export function removeBtnListeners() {
+  const deleteCardButton = document.querySelector('.popup__button-delete-card')
+  const newDeleteCardButton = deleteCardButton.cloneNode(true)
+  deleteCardButton.parentNode.replaceChild(newDeleteCardButton, deleteCardButton)
 }
 
 // Активируем валидацию
