@@ -2,7 +2,7 @@ import '../pages/index.css';
 import {enableValidation, resetValidation} from './validate.js';
 import {createCard} from "./cards.js";
 import {openPopup, closePopup} from "./modal.js";
-import {getProfileData, getCardData, sendProfileData, sendCardData} from "./api.js";
+import {getProfileData, getCardData, sendProfileData, sendCardData, changeAvatar} from "./api.js";
 
 const editForm = document.querySelector('.edit-form')
 const popupEdit = document.querySelector('.edit-name')
@@ -22,11 +22,18 @@ const linkInput = addForm.querySelector('.input-link')
 const cardContainer = document.querySelector('.elements')
 const addSaveButton = document.querySelector('.popup__button-save-add')
 
+const avatarForm = document.querySelector('.change-avatar-form')
+const avatarPopup = document.querySelector('.change-avatar')
+const avatarButton = document.querySelector('.profile__avatar-btn')
+const avatarInput = document.querySelector('.input-avatar')
+const avatarSaveButton = document.querySelector('.popup__button-save-avatar')
+
 const closeButtons = document.querySelectorAll('.popup__close-button')
 const popups = document.querySelectorAll('.popup')
 
 const editInputList = Array.from(document.querySelectorAll('.edit-name .popup__form-input'))
 const addInputList = Array.from(document.querySelectorAll('.add-card .popup__form-input'))
+const avatarInputList = Array.from(document.querySelectorAll('.change-avatar .popup__form-input'))
 
 const validationConfig = {
     formSelector: '.popup__form',
@@ -56,9 +63,9 @@ function addProfileData(name, about, avatar) {
   profileAvatar.src = avatar
 }
 
-// Обработчик "отправки" формы Edit
+// Обработчик отправки формы Edit
 function editFormSubmit(e) {
-  e.preventDefault();
+  e.preventDefault()
   editSaveButton.textContent = 'Сохраняем...'
 
   const data = {
@@ -74,9 +81,9 @@ function editFormSubmit(e) {
   closePopup()
 }
 
-// Обработчик "отправки" формы Add
+// Обработчик отправки формы Add
 function addFormSubmit(e) {
-  e.preventDefault();
+  e.preventDefault()
   addSaveButton.textContent = 'Добавляем...'
 
   const cardData = {
@@ -95,11 +102,30 @@ function addFormSubmit(e) {
   closePopup()
 }
 
-// Слушатель "отправки" формы Edit
+// Обработчик "отправки" формы Change
+function avatarFormSubmit(e) {
+  e.preventDefault()
+  avatarSaveButton.textContent = 'Сохранение...'
+
+  changeAvatar(avatarInput.value)
+    .then(res => {
+      profileAvatar.src = res.avatar
+      avatarForm.reset()
+    })
+    .catch(err => console.log(err))
+    .finally(() => addSaveButton.textContent = 'Сохранить')
+
+  closePopup()
+}
+
+// Слушатель отправки формы Edit
 editForm.addEventListener('submit', editFormSubmit);
 
 // Слушатель отправки формы Add
 addForm.addEventListener('submit', addFormSubmit)
+
+// Слушатель отправки формы Change
+avatarForm.addEventListener('submit', avatarFormSubmit)
 
 // Слушатель открытия модального окна Edit
 editButton.addEventListener('click', () => {
@@ -113,6 +139,12 @@ editButton.addEventListener('click', () => {
 addButton.addEventListener('click', () => {
   resetValidation(addInputList, validationConfig, addForm)
   openPopup(popupAdd)
+})
+
+// Слушатель открытия модального окна Change Avatar
+avatarButton.addEventListener('click', () => {
+  resetValidation(avatarInputList, validationConfig, avatarForm)
+  openPopup(avatarPopup)
 })
 
 // Слушатель с закрытием модальных окон по клику на крестик
