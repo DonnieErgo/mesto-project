@@ -1,8 +1,8 @@
 import '../pages/index.css';
 import {enableValidation, resetValidation} from './validate.js';
-import {createCard, deleteCard} from "./cards.js";
+import {createCard} from "./cards.js";
 import {openPopup, closePopup} from "./modal.js";
-import {getProfileData, getCardData, sendProfileData, sendCardData, changeAvatar} from "./api.js";
+import {getProfileData, getCardData, sendProfileData, sendCardData, changeAvatar, sendDeleteCard} from "./api.js";
 
 const editForm = document.querySelector('.edit-form')
 const popupEdit = document.querySelector('.edit-name')
@@ -28,6 +28,9 @@ const avatarButton = document.querySelector('.profile__avatar-btn')
 const avatarInput = document.querySelector('.input-avatar')
 const avatarSaveButton = document.querySelector('.popup__button-save-avatar')
 
+const deleteCardPopup = document.querySelector('.delete-card')
+const deleteCardPopupButton = document.querySelector('.popup__button-delete-card')
+
 const closeButtons = document.querySelectorAll('.popup__close-button')
 const popups = document.querySelectorAll('.popup')
 
@@ -50,9 +53,9 @@ Promise.all([getCardData(), getProfileData()])
 .then(([cards, userData]) => {
   cards.forEach(card => {
     addCard(createCard(card, userData))
-    addProfileData(userData.name, userData.about, userData.avatar);
-    user = userData;
   })
+  addProfileData(userData.name, userData.about, userData.avatar);
+  user = userData;
 })
 .catch(err => console.log(err))
 
@@ -62,8 +65,6 @@ function addProfileData(name, about, avatar) {
   profileJobTitle.textContent = about
   profileAvatar.src = avatar
 }
-
-//
 
 // Обработчик отправки формы Edit
 function editFormSubmit(e) {
@@ -76,11 +77,12 @@ function editFormSubmit(e) {
   }
 
   sendProfileData(data)
-    .then(res => addProfileData(res.name, res.about, res.avatar))
+    .then(res => {
+      addProfileData(res.name, res.about, res.avatar)
+      closePopup()
+    })
     .catch(err => console.log(err))
     .finally(() => editSaveButton.textContent = 'Сохранить')
-
-  closePopup()
 }
 
 // Обработчик отправки формы Add
@@ -97,11 +99,10 @@ function addFormSubmit(e) {
     .then(res => {
       addCard(createCard(res, user))
       addForm.reset()
+      closePopup()
     })
     .catch(err => console.log(err))
     .finally(() => addSaveButton.textContent = 'Добавить')
-
-  closePopup()
 }
 
 // Обработчик "отправки" формы Change
@@ -113,11 +114,33 @@ function avatarFormSubmit(e) {
     .then(res => {
       profileAvatar.src = res.avatar
       avatarForm.reset()
+      closePopup()
     })
     .catch(err => console.log(err))
-    .finally(() => addSaveButton.textContent = 'Сохранить')
+    .finally(() => avatarSaveButton.textContent = 'Сохранить')
+}
 
-  closePopup()
+// Обработчик нажатия на кнопку удаления карточки
+export function setupDeleteCard(e) {
+  openPopup(deleteCardPopup)
+
+  const card = e.target.closest('.elements__element')
+  const id = card.getAttribute('data-id')
+
+  deleteCardPopup.setAttribute('data-id', id)
+}
+
+// Функция отправки удаления карточки после подтверждения
+function deleteCardApproved() {
+  const id = deleteCardPopup.getAttribute('data-id')
+  const card = document.querySelector(`[data-id='${id}']`)
+
+  sendDeleteCard(id)
+    .then(() => {
+      card.remove()
+      closePopup()
+    })
+    .catch(err => console.log(err))
 }
 
 // Слушатель отправки формы Edit
@@ -128,6 +151,9 @@ addForm.addEventListener('submit', addFormSubmit)
 
 // Слушатель отправки формы Change
 avatarForm.addEventListener('submit', avatarFormSubmit)
+
+// Слушатель подтверждени удаления карточки
+deleteCardPopupButton.addEventListener('click', deleteCardApproved)
 
 // Слушатель открытия модального окна Edit
 editButton.addEventListener('click', () => {
@@ -160,19 +186,6 @@ popups.forEach(el => el.addEventListener('click',(e) => {
 // Функция добавления новой карточки на страницу
 function addCard (element) {
   cardContainer.prepend(element)
-}
-
-// Функция удаления карточки после подтверждения
-export function approveDeleteCard(cardData, element) {
-  deleteCard(cardData, element)
-  closePopup()
-}
-
-// Функция очистки слушателей с кнопки
-export function removeBtnListeners() {
-  const deleteCardButton = document.querySelector('.popup__button-delete-card')
-  const newDeleteCardButton = deleteCardButton.cloneNode(true)
-  deleteCardButton.parentNode.replaceChild(newDeleteCardButton, deleteCardButton)
 }
 
 // Активируем валидацию

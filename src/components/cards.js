@@ -1,5 +1,6 @@
-import {openPopup, openCardDeletePopup} from "./modal.js";
-import {sendDeleteCard, deleteCardLike, addCardLike} from "./api.js";
+import {openPopup} from "./modal.js";
+import {setupDeleteCard} from "./index.js";
+import {deleteCardLike, addCardLike} from "./api.js";
 
 const popupZoom = document.querySelector('.card-zoom')
 const cardZoomImg = document.querySelector('.card-zoom .popup__img')
@@ -17,6 +18,7 @@ export function createCard (cardData, userData) {
   elementImage.src = cardData.link;
   elementImage.alt = cardData.name;
   element.querySelector('.elements__header').textContent = cardData.name;
+  element.setAttribute('data-id', cardData._id)
 
   deleteButtonOwner(cardData, userData, deleteButton)
 
@@ -24,16 +26,10 @@ export function createCard (cardData, userData) {
   if (cardData.likes.some(el => el._id === userData._id)) likeButton.classList.add('elements__like-button_active')
 
   likeButton.addEventListener('click', (evt) => likeToggle(evt, cardData, likeCounter))
-  deleteButton.addEventListener('click', () => openCardDeletePopup(cardData, element))
+  deleteButton.addEventListener('click', (evt) => setupDeleteCard(evt))
   elementImage.addEventListener('click', () => openCardPopup(cardData))
 
   return element
-}
-
-// Функция удаления карточки
-export function deleteCard(cardData, element) {
-  sendDeleteCard(cardData._id)
-  element.remove()
 }
 
 // Функция кнопки like
@@ -48,7 +44,7 @@ function likeToggle (evt, cardData, likeCounter) {
         if (res.likes.length > 0) likeCounter.textContent = res.likes.length
         else likeCounter.textContent = ''
       })
-      .catch(err => console.log(err))
+
   } else {
     addCardLike(id)
       .then(res => {
