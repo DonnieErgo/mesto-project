@@ -1,5 +1,7 @@
 // Сброс валидации формы
 export function resetValidation(inputList, selectors, form) {
+  const button = form.querySelector(selectors.submitButtonSelector);
+  button.disabled = true
   inputList.forEach(inputElement => {
       hideInputError(inputElement, form, selectors)
   });
@@ -55,7 +57,6 @@ const toggleButtonState = (submitButton, inputList) => {
 const setEventListeners = (formElement, selectors) => {
   formElement.addEventListener('submit', e => {
     e.preventDefault()
-    submitButton.disabled = true
   })
 
   // Находим все инпуты для каждой формы
