@@ -48,7 +48,7 @@ const validationConfig = {
 
 let user;
 
-// Запрашиваем даннеые
+// Запрашиваем данные
 Promise.all([getCardData(), getProfileData()])
 .then(([cards, userData]) => {
   cards.forEach(card => {
