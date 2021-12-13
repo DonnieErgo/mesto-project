@@ -51,7 +51,7 @@ let user;
 // Запрашиваем данные
 Promise.all([getCardData(), getProfileData()])
 .then(([cards, userData]) => {
-  cards.forEach(card => {
+  cards.reverse().forEach(card => {
     addCard(createCard(card, userData))
   })
   addProfileData(userData.name, userData.about, userData.avatar);
