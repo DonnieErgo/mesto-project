@@ -1,6 +1,6 @@
 import {openPopup} from "./modal.js";
-import {setupDeleteCard} from "./index.js";
-import {deleteCardLike, addCardLike} from "./api.js";
+import {setupDeleteCard, api} from "./index.js";
+// import {deleteCardLike, addCardLike} from "./api.js";
 
 const popupZoom = document.querySelector('.card-zoom')
 const cardZoomImg = document.querySelector('.card-zoom .popup__img')
@@ -38,7 +38,7 @@ function likeToggle (evt, cardData, likeCounter) {
   const activeClass = 'elements__like-button_active'
 
   if (evt.target.classList.contains(activeClass)) {
-    deleteCardLike(id)
+    api.deleteCardLike(id)
       .then(res => {
         evt.target.classList.remove(activeClass)
         if (res.likes.length > 0) likeCounter.textContent = res.likes.length
@@ -46,7 +46,7 @@ function likeToggle (evt, cardData, likeCounter) {
       })
 
   } else {
-    addCardLike(id)
+    api.putCardLike(id)
       .then(res => {
         likeCounter.textContent = res.likes.length
         evt.target.classList.add(activeClass)

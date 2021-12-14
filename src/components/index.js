@@ -2,7 +2,16 @@ import '../pages/index.css';
 import {enableValidation, resetValidation} from './validate.js';
 import {createCard} from "./cards.js";
 import {openPopup, closePopup} from "./modal.js";
-import {getProfileData, getCardData, sendProfileData, sendCardData, changeAvatar, sendDeleteCard} from "./api.js";
+// import {getProfileData, getCardData, sendProfileData, sendCardData, changeAvatar, sendDeleteCard} from "./api.js";
+import Api from "./api.js";
+
+export const api = new Api({
+  baseUrl: 'https://nomoreparties.co/v1/plus-cohort-4',
+  headers: {
+    authorization: '959c9c28-048d-4fb8-b6da-ee5d034c5179',
+    'Content-Type': 'application/json'
+  }
+});
 
 const editForm = document.querySelector('.edit-form')
 const popupEdit = document.querySelector('.edit-name')
@@ -49,7 +58,7 @@ const validationConfig = {
 let user;
 
 // Запрашиваем данные
-Promise.all([getCardData(), getProfileData()])
+Promise.all([api.getInitialCards(), api.getInitialProfile()])
 .then(([cards, userData]) => {
   cards.reverse().forEach(card => {
     addCard(createCard(card, userData))
@@ -76,7 +85,7 @@ function editFormSubmit(e) {
     about: jobInput.value
   }
 
-  sendProfileData(data)
+  api.patchProfile(data)
     .then(res => {
       addProfileData(res.name, res.about, res.avatar)
       closePopup()
@@ -95,7 +104,7 @@ function addFormSubmit(e) {
     link: linkInput.value
   }
 
-  sendCardData(cardData)
+  api.postNewCard(cardData)
     .then(res => {
       addCard(createCard(res, user))
       addForm.reset()
@@ -110,7 +119,7 @@ function avatarFormSubmit(e) {
   e.preventDefault()
   avatarSaveButton.textContent = 'Сохранение...'
 
-  changeAvatar(avatarInput.value)
+  api.patchAvatar(avatarInput.value)
     .then(res => {
       profileAvatar.src = res.avatar
       avatarForm.reset()
@@ -135,7 +144,7 @@ function deleteCardApproved() {
   const id = deleteCardPopup.getAttribute('data-id')
   const card = document.querySelector(`[data-id='${id}']`)
 
-  sendDeleteCard(id)
+  api.deleteCard(id)
     .then(() => {
       card.remove()
       closePopup()
