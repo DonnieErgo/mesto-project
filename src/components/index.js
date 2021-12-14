@@ -1,9 +1,9 @@
 import '../pages/index.css';
 import {enableValidation, resetValidation} from './validate.js';
-import {createCard} from "./cards.js";
 import {openPopup, closePopup} from "./modal.js";
 // import {getProfileData, getCardData, sendProfileData, sendCardData, changeAvatar, sendDeleteCard} from "./api.js";
 import Api from "./api.js";
+import Card from "./card.js";
 
 export const api = new Api({
   baseUrl: 'https://nomoreparties.co/v1/plus-cohort-4',
@@ -42,6 +42,11 @@ const deleteCardPopupButton = document.querySelector('.popup__button-delete-card
 
 const closeButtons = document.querySelectorAll('.popup__close-button')
 const popups = document.querySelectorAll('.popup')
+const likeActiveClass = 'elements__like-button_active'
+const popupZoom = document.querySelector('.card-zoom')
+const cardZoomImg = document.querySelector('.card-zoom .popup__img')
+const cardZoomCaption = document.querySelector('.card-zoom .popup__caption')
+const defaultCardTemplate = '#element-template';
 
 const editInputList = Array.from(document.querySelectorAll('.edit-name .popup__form-input'))
 const addInputList = Array.from(document.querySelectorAll('.add-card .popup__form-input'))
@@ -61,7 +66,44 @@ let user;
 Promise.all([api.getInitialCards(), api.getInitialProfile()])
 .then(([cards, userData]) => {
   cards.reverse().forEach(card => {
-    addCard(createCard(card, userData))
+    const cardItem = new Card({
+      cardData: JSON.stringify(card),
+      userData: JSON.stringify(userData),
+      likeToggle: (evt, cardData, likeCounter) => {
+        const id = cardData._id
+
+        if (evt.target.classList.contains(likeActiveClass)) {
+          api.deleteCardLike(id)
+            .then(res => {
+              evt.target.classList.remove(likeActiveClass)
+              if (res.likes.length > 0) likeCounter.textContent = res.likes.length
+              else likeCounter.textContent = ''
+            })
+        } else {
+          api.putCardLike(id)
+            .then(res => {
+              likeCounter.textContent = res.likes.length
+              evt.target.classList.add(likeActiveClass)
+            })
+            .catch(err => console.log(err))
+        }
+      },
+      deleteCardSetup: (evt) => {
+        openPopup(deleteCardPopup)
+
+        const card = evt.target.closest('.elements__element')
+        const id = card.getAttribute('data-id')
+
+        deleteCardPopup.setAttribute('data-id', id)
+      },
+      openCardPopup: (cardData) => {
+        cardZoomImg.src = cardData.link;
+        cardZoomImg.alt = cardData.name;
+        cardZoomCaption.textContent = cardData.name;
+        openPopup(popupZoom)
+      }
+    }, defaultCardTemplate)
+    addCard(cardItem.generateCard())
   })
   addProfileData(userData.name, userData.about, userData.avatar);
   user = userData;
@@ -106,7 +148,44 @@ function addFormSubmit(e) {
 
   api.postNewCard(cardData)
     .then(res => {
-      addCard(createCard(res, user))
+      const cardItem = new Card({
+        cardData: JSON.stringify(res),
+        userData: JSON.stringify(user),
+        likeToggle: (evt, cardData, likeCounter) => {
+          const id = cardData._id
+
+          if (evt.target.classList.contains(likeActiveClass)) {
+            api.deleteCardLike(id)
+              .then(res => {
+                evt.target.classList.remove(likeActiveClass)
+                if (res.likes.length > 0) likeCounter.textContent = res.likes.length
+                else likeCounter.textContent = ''
+              })
+          } else {
+            api.putCardLike(id)
+              .then(res => {
+                likeCounter.textContent = res.likes.length
+                evt.target.classList.add(likeActiveClass)
+              })
+              .catch(err => console.log(err))
+          }
+        },
+        deleteCardSetup: (evt) => {
+          openPopup(deleteCardPopup)
+
+          const card = evt.target.closest('.elements__element')
+          const id = card.getAttribute('data-id')
+
+          deleteCardPopup.setAttribute('data-id', id)
+        },
+        openCardPopup: (cardData) => {
+          cardZoomImg.src = cardData.link;
+          cardZoomImg.alt = cardData.name;
+          cardZoomCaption.textContent = cardData.name;
+          openPopup(popupZoom)
+        }
+      }, defaultCardTemplate);
+      addCard(cardItem.generateCard())
       addForm.reset()
       closePopup()
     })
@@ -130,14 +209,14 @@ function avatarFormSubmit(e) {
 }
 
 // Обработчик нажатия на кнопку удаления карточки
-export function setupDeleteCard(e) {
-  openPopup(deleteCardPopup)
+// export function setupDeleteCard(e) {
+//   openPopup(deleteCardPopup)
 
-  const card = e.target.closest('.elements__element')
-  const id = card.getAttribute('data-id')
+//   const card = e.target.closest('.elements__element')
+//   const id = card.getAttribute('data-id')
 
-  deleteCardPopup.setAttribute('data-id', id)
-}
+//   deleteCardPopup.setAttribute('data-id', id)
+// }
 
 // Функция отправки удаления карточки после подтверждения
 function deleteCardApproved() {
