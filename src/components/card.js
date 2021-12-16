@@ -1,22 +1,18 @@
-import {openPopup} from "./modal.js";
-import {setupDeleteCard, api} from "./index.js";
-// import {deleteCardLike, addCardLike} from "./api.js";
-
 export default class Card {
-  constructor({cardData, userData, likeToggle, deleteCardSetup, openCardPopup}, templateSelector) {
-    this._cardData = JSON.parse(cardData);
-    this._userData = JSON.parse(userData);
-    this._templateSelector = templateSelector;
+  constructor({cardData, userData, likeToggle, deleteCardSetup, openCardPopup}, config) {
+    this._cardData = cardData;
+    this._userData = userData;
     this._likeToggle = likeToggle;
     this._deleteCardSetup = deleteCardSetup;
     this._openCardPopup = openCardPopup;
+    this._config = config;
   }
 
   _getCardTemplate() {
     const elementTemplate = document
-      .querySelector(this._templateSelector)
+      .querySelector(this._config.cardTemplateSelector)
       .content
-      .querySelector('.elements__element')
+      .querySelector(this._config.cardSelector)
       .cloneNode(true)
 
     return elementTemplate
@@ -42,7 +38,7 @@ export default class Card {
 
   _checkLikes() {
     if (this._cardData.likes.length > 0) this._likeCounter.textContent = this._cardData.likes.length;
-    if (this._cardData.likes.some(el => el._id === this._userData._id)) this._likeButton.classList.add('elements__like-button_active')
+    if (this._cardData.likes.some(el => el._id === this._userData._id)) this._likeButton.classList.add(this._config.activeLikeClass)
   }
 
   _checkCardOwner() {
@@ -60,11 +56,11 @@ export default class Card {
 
   generateCard() {
     this.card = this._getCardTemplate()
-    this._likeButton = this.card.querySelector('.elements__like-button')
-    this._likeCounter = this.card.querySelector('.elements__like-counter')
-    this._deleteButton = this.card.querySelector('.elements__delete-button')
-    this._cardImage = this.card.querySelector('.elements__image')
-    this._cardName = this.card.querySelector('.elements__header')
+    this._likeButton = this.card.querySelector(this._config.likeButtonSelector)
+    this._likeCounter = this.card.querySelector(this._config.likeCounterSelector)
+    this._deleteButton = this.card.querySelector(this._config.deleteButtonSelector)
+    this._cardImage = this.card.querySelector(this._config.cardImageSelector)
+    this._cardName = this.card.querySelector(this._config.cardNameSelector)
 
     this._setCardValues()
     this._checkCardOwner()
@@ -74,71 +70,3 @@ export default class Card {
     return this.card;
   }
 }
-
-// // Функция создания карточками
-// export function createCard (cardData, userData) {
-//   const addCardTemplate = document.querySelector('#element-template').content
-//   const element = addCardTemplate.querySelector('.elements__element').cloneNode(true)
-//   const elementImage = element.querySelector('.elements__image')
-//   const deleteButton = element.querySelector('.elements__delete-button')
-//   const likeButton = element.querySelector('.elements__like-button')
-//   const likeCounter = element.querySelector('.elements__like-counter')
-
-//   elementImage.src = cardData.link;
-//   elementImage.alt = cardData.name;
-//   element.querySelector('.elements__header').textContent = cardData.name;
-//   element.setAttribute('data-id', cardData._id)
-
-//   deleteButtonOwner(cardData, userData, deleteButton)
-
-//   if (cardData.likes.length > 0) likeCounter.textContent = cardData.likes.length;
-//   if (cardData.likes.some(el => el._id === userData._id)) likeButton.classList.add('elements__like-button_active')
-
-//   likeButton.addEventListener('click', (evt) => likeToggle(evt, cardData, likeCounter))
-//   deleteButton.addEventListener('click', (evt) => setupDeleteCard(evt))
-//   elementImage.addEventListener('click', () => openCardPopup(cardData))
-
-//   return element
-// }
-
-// // Функция кнопки like
-// function likeToggle (evt, cardData, likeCounter) {
-//   const id = cardData._id
-//   const activeClass = 'elements__like-button_active'
-
-//   if (evt.target.classList.contains(activeClass)) {
-//     api.deleteCardLike(id)
-//       .then(res => {
-//         evt.target.classList.remove(activeClass)
-//         if (res.likes.length > 0) likeCounter.textContent = res.likes.length
-//         else likeCounter.textContent = ''
-//       })
-
-//   } else {
-//     api.putCardLike(id)
-//       .then(res => {
-//         likeCounter.textContent = res.likes.length
-//         evt.target.classList.add(activeClass)
-//       })
-//       .catch(err => console.log(err))
-//   }
-// }
-
-// // Проверка на овнера карточки
-// function deleteButtonOwner (card, userData, deleteButton) {
-//   if (card.owner._id !== userData._id) {
-//     deleteButton.style.display = 'none';
-//   }
-// }
-
-// Создание модального окна с картинкой
-// function openCardPopup (cardData) {
-//   const popupZoom = document.querySelector('.card-zoom')
-//   const cardZoomImg = document.querySelector('.card-zoom .popup__img')
-//   const cardZoomCaption = document.querySelector('.card-zoom .popup__caption')
-
-//   cardZoomImg.src = cardData.link;
-//   cardZoomImg.alt = cardData.name;
-//   cardZoomCaption.textContent = cardData.name;
-//   openPopup(popupZoom)
-// }

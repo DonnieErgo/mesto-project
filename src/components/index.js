@@ -47,7 +47,6 @@ const likeActiveClass = 'elements__like-button_active'
 const popupZoom = document.querySelector('.card-zoom')
 const cardZoomImg = document.querySelector('.card-zoom .popup__img')
 const cardZoomCaption = document.querySelector('.card-zoom .popup__caption')
-const defaultCardTemplate = '#element-template';
 
 const validationConfig = {
     formSelector: '.popup__form',
@@ -59,44 +58,61 @@ const validationConfig = {
 
 let user;
 
+function likeToggle(evt, cardData, likeCounter) {
+  const id = cardData._id
+
+  if (evt.target.classList.contains(likeActiveClass)) {
+    api.deleteCardLike(id)
+      .then(res => {
+        evt.target.classList.remove(likeActiveClass)
+        if (res.likes.length > 0) likeCounter.textContent = res.likes.length
+        else likeCounter.textContent = ''
+      })
+  } else {
+    api.putCardLike(id)
+      .then(res => {
+        likeCounter.textContent = res.likes.length
+        evt.target.classList.add(likeActiveClass)
+      })
+      .catch(err => console.log(err))
+  }
+}
+
+function deleteCardSetup(evt) {
+  openPopup(deleteCardPopup)
+
+  const card = evt.target.closest('.elements__element')
+  const id = card.getAttribute('data-id')
+
+  deleteCardPopup.setAttribute('data-id', id)
+}
+
+function openCardPopup(cardData) {
+  cardZoomImg.src = cardData.link;
+  cardZoomImg.alt = cardData.name;
+  cardZoomCaption.textContent = cardData.name;
+  openPopup(popupZoom)
+}
+
+
 function getNewCardClass(cardData, userData) {
   return new Card({
-    cardData: JSON.stringify(cardData),
-    userData: JSON.stringify(userData),
-    likeToggle: (evt, cardData, likeCounter) => {
-      const id = cardData._id
-
-      if (evt.target.classList.contains(likeActiveClass)) {
-        api.deleteCardLike(id)
-          .then(res => {
-            evt.target.classList.remove(likeActiveClass)
-            if (res.likes.length > 0) likeCounter.textContent = res.likes.length
-            else likeCounter.textContent = ''
-          })
-      } else {
-        api.putCardLike(id)
-          .then(res => {
-            likeCounter.textContent = res.likes.length
-            evt.target.classList.add(likeActiveClass)
-          })
-          .catch(err => console.log(err))
-      }
-    },
-    deleteCardSetup: (evt) => {
-      openPopup(deleteCardPopup)
-
-      const card = evt.target.closest('.elements__element')
-      const id = card.getAttribute('data-id')
-
-      deleteCardPopup.setAttribute('data-id', id)
-    },
-    openCardPopup: (cardData) => {
-      cardZoomImg.src = cardData.link;
-      cardZoomImg.alt = cardData.name;
-      cardZoomCaption.textContent = cardData.name;
-      openPopup(popupZoom)
-    }
-  }, defaultCardTemplate)
+    cardData: cardData,
+    userData: userData,
+    likeToggle: likeToggle,
+    deleteCardSetup: deleteCardSetup,
+    openCardPopup: openCardPopup,
+  },
+  {
+    cardTemplateSelector: '#element-template',
+    cardSelector: '.elements__element',
+    likeButtonSelector: '.elements__like-button',
+    likeCounterSelector: '.elements__like-counter',
+    deleteButtonSelector: '.elements__delete-button',
+    cardImageSelector: '.elements__image',
+    cardNameSelector: '.elements__header',
+    activeLikeClass: 'elements__like-button_active',
+  })
 }
 
 // Запрашиваем данные
@@ -173,16 +189,6 @@ function avatarFormSubmit(e) {
     .finally(() => avatarSaveButton.textContent = 'Сохранить')
 }
 
-// Обработчик нажатия на кнопку удаления карточки
-// export function setupDeleteCard(e) {
-//   openPopup(deleteCardPopup)
-
-//   const card = e.target.closest('.elements__element')
-//   const id = card.getAttribute('data-id')
-
-//   deleteCardPopup.setAttribute('data-id', id)
-// }
-
 // Функция отправки удаления карточки после подтверждения
 function deleteCardApproved() {
   const id = deleteCardPopup.getAttribute('data-id')
@@ -247,6 +253,3 @@ forms.forEach(form => {
   const formValidation = new FormValidator(validationConfig, form);
   formValidation.enableValidation()
 })
-
-// // Активируем валидацию
-// enableValidation(validationConfig);
