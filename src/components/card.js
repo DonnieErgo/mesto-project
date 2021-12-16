@@ -55,6 +55,7 @@ export default class Card {
     this._cardImage.src = this._cardData.link
     this._cardImage.alt = this._cardData.name
     this._cardName.textContent = this._cardData.name;
+    this.card.setAttribute('data-id', this._cardData._id)
   }
 
   generateCard() {

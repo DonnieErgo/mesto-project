@@ -1,9 +1,10 @@
 import '../pages/index.css';
-import {enableValidation, resetValidation} from './validate.js';
+// import {enableValidation, resetValidation} from './validate.js';
 import {openPopup, closePopup} from "./modal.js";
 // import {getProfileData, getCardData, sendProfileData, sendCardData, changeAvatar, sendDeleteCard} from "./api.js";
 import Api from "./api.js";
 import Card from "./card.js";
+import FormValidator from "./validate.js";
 
 export const api = new Api({
   baseUrl: 'https://nomoreparties.co/v1/plus-cohort-4',
@@ -62,47 +63,51 @@ const validationConfig = {
 
 let user;
 
+function getNewCardClass(cardData, userData) {
+  return new Card({
+    cardData: JSON.stringify(cardData),
+    userData: JSON.stringify(userData),
+    likeToggle: (evt, cardData, likeCounter) => {
+      const id = cardData._id
+
+      if (evt.target.classList.contains(likeActiveClass)) {
+        api.deleteCardLike(id)
+          .then(res => {
+            evt.target.classList.remove(likeActiveClass)
+            if (res.likes.length > 0) likeCounter.textContent = res.likes.length
+            else likeCounter.textContent = ''
+          })
+      } else {
+        api.putCardLike(id)
+          .then(res => {
+            likeCounter.textContent = res.likes.length
+            evt.target.classList.add(likeActiveClass)
+          })
+          .catch(err => console.log(err))
+      }
+    },
+    deleteCardSetup: (evt) => {
+      openPopup(deleteCardPopup)
+
+      const card = evt.target.closest('.elements__element')
+      const id = card.getAttribute('data-id')
+
+      deleteCardPopup.setAttribute('data-id', id)
+    },
+    openCardPopup: (cardData) => {
+      cardZoomImg.src = cardData.link;
+      cardZoomImg.alt = cardData.name;
+      cardZoomCaption.textContent = cardData.name;
+      openPopup(popupZoom)
+    }
+  }, defaultCardTemplate)
+}
+
 // Запрашиваем данные
 Promise.all([api.getInitialCards(), api.getInitialProfile()])
 .then(([cards, userData]) => {
   cards.reverse().forEach(card => {
-    const cardItem = new Card({
-      cardData: JSON.stringify(card),
-      userData: JSON.stringify(userData),
-      likeToggle: (evt, cardData, likeCounter) => {
-        const id = cardData._id
-
-        if (evt.target.classList.contains(likeActiveClass)) {
-          api.deleteCardLike(id)
-            .then(res => {
-              evt.target.classList.remove(likeActiveClass)
-              if (res.likes.length > 0) likeCounter.textContent = res.likes.length
-              else likeCounter.textContent = ''
-            })
-        } else {
-          api.putCardLike(id)
-            .then(res => {
-              likeCounter.textContent = res.likes.length
-              evt.target.classList.add(likeActiveClass)
-            })
-            .catch(err => console.log(err))
-        }
-      },
-      deleteCardSetup: (evt) => {
-        openPopup(deleteCardPopup)
-
-        const card = evt.target.closest('.elements__element')
-        const id = card.getAttribute('data-id')
-
-        deleteCardPopup.setAttribute('data-id', id)
-      },
-      openCardPopup: (cardData) => {
-        cardZoomImg.src = cardData.link;
-        cardZoomImg.alt = cardData.name;
-        cardZoomCaption.textContent = cardData.name;
-        openPopup(popupZoom)
-      }
-    }, defaultCardTemplate)
+    const cardItem = getNewCardClass(card, userData)
     addCard(cardItem.generateCard())
   })
   addProfileData(userData.name, userData.about, userData.avatar);
@@ -148,43 +153,7 @@ function addFormSubmit(e) {
 
   api.postNewCard(cardData)
     .then(res => {
-      const cardItem = new Card({
-        cardData: JSON.stringify(res),
-        userData: JSON.stringify(user),
-        likeToggle: (evt, cardData, likeCounter) => {
-          const id = cardData._id
-
-          if (evt.target.classList.contains(likeActiveClass)) {
-            api.deleteCardLike(id)
-              .then(res => {
-                evt.target.classList.remove(likeActiveClass)
-                if (res.likes.length > 0) likeCounter.textContent = res.likes.length
-                else likeCounter.textContent = ''
-              })
-          } else {
-            api.putCardLike(id)
-              .then(res => {
-                likeCounter.textContent = res.likes.length
-                evt.target.classList.add(likeActiveClass)
-              })
-              .catch(err => console.log(err))
-          }
-        },
-        deleteCardSetup: (evt) => {
-          openPopup(deleteCardPopup)
-
-          const card = evt.target.closest('.elements__element')
-          const id = card.getAttribute('data-id')
-
-          deleteCardPopup.setAttribute('data-id', id)
-        },
-        openCardPopup: (cardData) => {
-          cardZoomImg.src = cardData.link;
-          cardZoomImg.alt = cardData.name;
-          cardZoomCaption.textContent = cardData.name;
-          openPopup(popupZoom)
-        }
-      }, defaultCardTemplate);
+      const cardItem = getNewCardClass(res, user)
       addCard(cardItem.generateCard())
       addForm.reset()
       closePopup()
@@ -245,21 +214,21 @@ deleteCardPopupButton.addEventListener('click', deleteCardApproved)
 
 // Слушатель открытия модального окна Edit
 editButton.addEventListener('click', () => {
+  editForm.reset()
   nameInput.value = profileName.textContent;
   jobInput.value = profileJobTitle.textContent;
-  resetValidation(editInputList, validationConfig, editForm)
   openPopup(popupEdit)
 })
 
 // Слушатель открытия модального окна Add
 addButton.addEventListener('click', () => {
-  resetValidation(addInputList, validationConfig, addForm)
+  addForm.reset()
   openPopup(popupAdd)
 })
 
 // Слушатель открытия модального окна Change Avatar
 avatarButton.addEventListener('click', () => {
-  resetValidation(avatarInputList, validationConfig, avatarForm)
+  avatarForm.reset()
   openPopup(avatarPopup)
 })
 
@@ -276,5 +245,12 @@ function addCard (element) {
   cardContainer.prepend(element)
 }
 
-// Активируем валидацию
-enableValidation(validationConfig);
+const forms = document.querySelectorAll('.popup__form');
+
+forms.forEach(form => {
+  const formValidation = new FormValidator(validationConfig, form);
+  formValidation.enableValidation()
+})
+
+// // Активируем валидацию
+// enableValidation(validationConfig);
