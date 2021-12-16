@@ -49,10 +49,6 @@ const cardZoomImg = document.querySelector('.card-zoom .popup__img')
 const cardZoomCaption = document.querySelector('.card-zoom .popup__caption')
 const defaultCardTemplate = '#element-template';
 
-const editInputList = Array.from(document.querySelectorAll('.edit-name .popup__form-input'))
-const addInputList = Array.from(document.querySelectorAll('.add-card .popup__form-input'))
-const avatarInputList = Array.from(document.querySelectorAll('.change-avatar .popup__form-input'))
-
 const validationConfig = {
     formSelector: '.popup__form',
     inputSelector: '.popup__form-input',

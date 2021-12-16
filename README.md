@@ -17,6 +17,8 @@
 - Настроена минификация и транспиляция Babel
 - Взаимодействие с сервером - промисы и фетч
 
-Автор - Михаил Ненашев
+Авторы:
+Михаил Ненашев - https://github.com/DonnieErgo
+Никита Андреев - https://github.com/MedusCode
 
 *Ссылка на GitHub Pages -* https://donnieergo.github.io/mesto-project/
