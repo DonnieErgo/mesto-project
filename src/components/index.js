@@ -5,8 +5,9 @@ import {openPopup, closePopup} from "./modal.js";
 import Api from "./api.js";
 import Card from "./card.js";
 import FormValidator from "./validate.js";
+import Section from "./section.js";
 
-export const api = new Api({
+const api = new Api({
   baseUrl: 'https://nomoreparties.co/v1/plus-cohort-4',
   headers: {
     authorization: '959c9c28-048d-4fb8-b6da-ee5d034c5179',
@@ -47,6 +48,8 @@ const likeActiveClass = 'elements__like-button_active'
 const popupZoom = document.querySelector('.card-zoom')
 const cardZoomImg = document.querySelector('.card-zoom .popup__img')
 const cardZoomCaption = document.querySelector('.card-zoom .popup__caption')
+
+const cardContainerSelector = '.elements';
 
 const validationConfig = {
     formSelector: '.popup__form',
@@ -118,12 +121,19 @@ function getNewCardClass(cardData, userData) {
 // Запрашиваем данные
 Promise.all([api.getInitialCards(), api.getInitialProfile()])
 .then(([cards, userData]) => {
-  cards.reverse().forEach(card => {
-    const cardItem = getNewCardClass(card, userData)
-    addCard(cardItem.generateCard())
-  })
-  addProfileData(userData.name, userData.about, userData.avatar);
   user = userData;
+  const defaultCardSection = new Section(
+    {
+      items: cards.reverse(),
+      renderer: item => {
+        const cardItem = getNewCardClass(item, user)
+        const card = cardItem.generateCard()
+        defaultCardSection.addItem(card)
+      }
+    },
+    cardContainerSelector)
+  defaultCardSection.renderItems()
+  addProfileData(user.name, user.about, user.avatar)
 })
 .catch(err => console.log(err))
 
@@ -165,8 +175,17 @@ function addFormSubmit(e) {
 
   api.postNewCard(cardData)
     .then(res => {
-      const cardItem = getNewCardClass(res, user)
-      addCard(cardItem.generateCard())
+      const defaultCardSection = new Section(
+        {
+          items: res,
+          renderer: item => {
+            const cardItem = getNewCardClass(item, user)
+            const card = cardItem.generateCard()
+            defaultCardSection.addItem(card)
+          }
+        },
+        cardContainerSelector)
+      defaultCardSection.renderItems()
       addForm.reset()
       closePopup()
     })
@@ -241,11 +260,6 @@ closeButtons.forEach (el => el.addEventListener('click', closePopup));
 popups.forEach(el => el.addEventListener('click',(e) => {
   if (e.target.classList.contains('popup_active')) closePopup();
 }))
-
-// Функция добавления новой карточки на страницу
-function addCard (element) {
-  cardContainer.prepend(element)
-}
 
 const forms = document.querySelectorAll('.popup__form');
 
