@@ -6,6 +6,7 @@ import Api from "./api.js";
 import Card from "./card.js";
 import FormValidator from "./validate.js";
 import Section from "./section.js";
+import {Popup} from './popup.js';
 
 const api = new Api({
   baseUrl: 'https://nomoreparties.co/v1/plus-cohort-4',
@@ -14,6 +15,17 @@ const api = new Api({
     'Content-Type': 'application/json'
   }
 });
+
+const popupConfig = {
+  popupActiveClass: 'popup_active',
+  closeButtonSelector: '.popup__close-button',
+}
+
+const editProfilePopup = new Popup(popupConfig, '.edit-name')
+const addCardPopup = new Popup(popupConfig, '.add-card')
+const changeAvatarPopup = new Popup(popupConfig, '.change-avatar')
+const cardZoomPopup = new Popup(popupConfig, '.card-zoom')
+const deleteCardPopup = new Popup(popupConfig, '.delete-card')
 
 const editForm = document.querySelector('.edit-form')
 const popupEdit = document.querySelector('.edit-name')
@@ -39,7 +51,7 @@ const avatarButton = document.querySelector('.profile__avatar-btn')
 const avatarInput = document.querySelector('.input-avatar')
 const avatarSaveButton = document.querySelector('.popup__button-save-avatar')
 
-const deleteCardPopup = document.querySelector('.delete-card')
+const deletePopup = document.querySelector('.delete-card')
 const deleteCardPopupButton = document.querySelector('.popup__button-delete-card')
 
 const closeButtons = document.querySelectorAll('.popup__close-button')
@@ -82,19 +94,19 @@ function likeToggle(evt, cardData, likeCounter) {
 }
 
 function deleteCardSetup(evt) {
-  openPopup(deleteCardPopup)
+  deleteCardPopup.open()
 
   const card = evt.target.closest('.elements__element')
   const id = card.getAttribute('data-id')
 
-  deleteCardPopup.setAttribute('data-id', id)
+  deletePopup.setAttribute('data-id', id)
 }
 
 function openCardPopup(cardData) {
   cardZoomImg.src = cardData.link;
   cardZoomImg.alt = cardData.name;
   cardZoomCaption.textContent = cardData.name;
-  openPopup(popupZoom)
+  cardZoomPopup.open()
 }
 
 
@@ -157,7 +169,7 @@ function editFormSubmit(e) {
   api.patchProfile(data)
     .then(res => {
       addProfileData(res.name, res.about, res.avatar)
-      closePopup()
+      editProfilePopup.close()
     })
     .catch(err => console.log(err))
     .finally(() => editSaveButton.textContent = 'Сохранить')
@@ -187,7 +199,7 @@ function addFormSubmit(e) {
         cardContainerSelector)
       defaultCardSection.renderItems()
       addForm.reset()
-      closePopup()
+      addCardPopup.close()
     })
     .catch(err => console.log(err))
     .finally(() => addSaveButton.textContent = 'Добавить')
@@ -202,7 +214,7 @@ function avatarFormSubmit(e) {
     .then(res => {
       profileAvatar.src = res.avatar
       avatarForm.reset()
-      closePopup()
+      changeAvatarPopup.close()
     })
     .catch(err => console.log(err))
     .finally(() => avatarSaveButton.textContent = 'Сохранить')
@@ -210,13 +222,13 @@ function avatarFormSubmit(e) {
 
 // Функция отправки удаления карточки после подтверждения
 function deleteCardApproved() {
-  const id = deleteCardPopup.getAttribute('data-id')
+  const id = deletePopup.getAttribute('data-id')
   const card = document.querySelector(`[data-id='${id}']`)
 
   api.deleteCard(id)
     .then(() => {
       card.remove()
-      closePopup()
+      deleteCardPopup.close()
     })
     .catch(err => console.log(err))
 }
@@ -238,28 +250,28 @@ editButton.addEventListener('click', () => {
   editForm.reset()
   nameInput.value = profileName.textContent;
   jobInput.value = profileJobTitle.textContent;
-  openPopup(popupEdit)
+  editProfilePopup.open()
 })
 
 // Слушатель открытия модального окна Add
 addButton.addEventListener('click', () => {
   addForm.reset()
-  openPopup(popupAdd)
+  addCardPopup.open()
 })
 
 // Слушатель открытия модального окна Change Avatar
 avatarButton.addEventListener('click', () => {
   avatarForm.reset()
-  openPopup(avatarPopup)
+  changeAvatarPopup.open()
 })
 
 // Слушатель с закрытием модальных окон по клику на крестик
-closeButtons.forEach (el => el.addEventListener('click', closePopup));
+// closeButtons.forEach(el => el.addEventListener('click', closePopup));
 
 // Слушатель и функция закрытия модальных окон при клике вне окна
-popups.forEach(el => el.addEventListener('click',(e) => {
-  if (e.target.classList.contains('popup_active')) closePopup();
-}))
+// popups.forEach(el => el.addEventListener('click',(e) => {
+//   if (e.target.classList.contains('popup_active')) closePopup();
+// }))
 
 const forms = document.querySelectorAll('.popup__form');
 
