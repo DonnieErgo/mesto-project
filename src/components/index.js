@@ -1,12 +1,12 @@
 import '../pages/index.css';
 // import {enableValidation, resetValidation} from './validate.js';
-import {openPopup, closePopup} from "./modal.js";
+// import {openPopup, closePopup} from "./modal.js";
 // import {getProfileData, getCardData, sendProfileData, sendCardData, changeAvatar, sendDeleteCard} from "./api.js";
 import Api from "./api.js";
 import Card from "./card.js";
 import FormValidator from "./validate.js";
 import Section from "./section.js";
-import {Popup} from './popup.js';
+import {Popup, PopupWithImage} from './popup.js';
 
 const api = new Api({
   baseUrl: 'https://nomoreparties.co/v1/plus-cohort-4',
@@ -19,12 +19,14 @@ const api = new Api({
 const popupConfig = {
   popupActiveClass: 'popup_active',
   closeButtonSelector: '.popup__close-button',
+  cardZoomImgSelector: '.popup__img',
+  cardZoomCaptionSelector: '.popup__caption',
 }
 
 const editProfilePopup = new Popup(popupConfig, '.edit-name')
 const addCardPopup = new Popup(popupConfig, '.add-card')
 const changeAvatarPopup = new Popup(popupConfig, '.change-avatar')
-const cardZoomPopup = new Popup(popupConfig, '.card-zoom')
+const cardZoomPopup = new PopupWithImage(popupConfig, '.card-zoom')
 const deleteCardPopup = new Popup(popupConfig, '.delete-card')
 
 const editForm = document.querySelector('.edit-form')
@@ -58,8 +60,8 @@ const closeButtons = document.querySelectorAll('.popup__close-button')
 const popups = document.querySelectorAll('.popup')
 const likeActiveClass = 'elements__like-button_active'
 const popupZoom = document.querySelector('.card-zoom')
-const cardZoomImg = document.querySelector('.card-zoom .popup__img')
-const cardZoomCaption = document.querySelector('.card-zoom .popup__caption')
+const cardZoomImg = popupZoom.querySelector('.popup__img')
+const cardZoomCaption = popupZoom.querySelector('.popup__caption')
 
 const cardContainerSelector = '.elements';
 
@@ -103,12 +105,8 @@ function deleteCardSetup(evt) {
 }
 
 function openCardPopup(cardData) {
-  cardZoomImg.src = cardData.link;
-  cardZoomImg.alt = cardData.name;
-  cardZoomCaption.textContent = cardData.name;
-  cardZoomPopup.open()
+  cardZoomPopup.open(cardData)
 }
-
 
 function getNewCardClass(cardData, userData) {
   return new Card({
@@ -264,14 +262,6 @@ avatarButton.addEventListener('click', () => {
   avatarForm.reset()
   changeAvatarPopup.open()
 })
-
-// Слушатель с закрытием модальных окон по клику на крестик
-// closeButtons.forEach(el => el.addEventListener('click', closePopup));
-
-// Слушатель и функция закрытия модальных окон при клике вне окна
-// popups.forEach(el => el.addEventListener('click',(e) => {
-//   if (e.target.classList.contains('popup_active')) closePopup();
-// }))
 
 const forms = document.querySelectorAll('.popup__form');
 
