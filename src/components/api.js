@@ -25,10 +25,10 @@ export default class Api {
   getInitialCards() {return this._connectServerTemplate('/cards')}
 
   // Отправляем изменения профиля
-  patchProfile(data) {return this._connectServerTemplate('/users/me', 'PATCH', JSON.stringify({name: data.name, about: data.about}))}
+  patchProfile(data) {return this._connectServerTemplate('/users/me', 'PATCH', JSON.stringify({name: data.name, about: data.title}))}
 
   // Отправляем новую карточку
-  postNewCard(card) {return this._connectServerTemplate('/cards', 'POST', JSON.stringify({name: card.name, link: card.link}))}
+  postNewCard(card) {return this._connectServerTemplate('/cards', 'POST', JSON.stringify({name: card.picname, link: card.link}))}
 
   // Отправляем удаление карточки
   deleteCard(id) {return this._connectServerTemplate(`/cards/${id}`, 'DELETE')}
