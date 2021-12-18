@@ -18,8 +18,8 @@
 - Взаимодействие с сервером - промисы и фетч
 - Проведён рефакторинг когда под ООП, предыдущая версия находится в ветке Archive
 
-Авторы:
-Михаил Ненашев - nord-vizjerei@yandex.ru - https://github.com/DonnieErgo
+Авторы:  
+Михаил Ненашев - nord-vizjerei@yandex.ru - https://github.com/DonnieErgo  
 Никита Андреев - MedusDjin@yandex.ru - https://github.com/MedusCode
 
 *Ссылка на GitHub Pages -* https://donnieergo.github.io/mesto-project/
