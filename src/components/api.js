@@ -1,9 +1,11 @@
+// Класс для работы с сервером
 export default class Api {
   constructor(options) {
     this._baseUrl = options.baseUrl;
     this._headers = options.headers;
   }
 
+  //Шаблон обращения к серверу
   _connectServerTemplate(url, method = 'GET', body = null) {
     return fetch(`${this._baseUrl}${url}`, {
       method: method,

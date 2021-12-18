@@ -1,15 +1,17 @@
+// Класс для отрисовки информации в профиле
 export default class UserInfo {
-  constructor(config, userData) {
+  constructor(config) {
     this._userNameSelector = config.userNameSelector;
     this._userAboutSelector = config.userAboutSelector;
     this._userAvatarSelector = config.userAvatarSelector;
   }
 
+  // Возвращение объекта с информацией о пользователе
   getUserInfo() {
-    return this._userData;
+    return this.userData;
   }
 
-  // Наполняем профиль актуальными данными
+  // Наполнение профиля актуальными данными
   setUserInfo(name, about, avatar) {
     document.querySelector(this._userNameSelector).textContent = name;
     document.querySelector(this._userAboutSelector).textContent = about;

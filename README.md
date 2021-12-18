@@ -16,9 +16,10 @@
 - Установлен Webpack и настроены сборки build/dev
 - Настроена минификация и транспиляция Babel
 - Взаимодействие с сервером - промисы и фетч
+- Проведён рефакторинг когда под ООП, предыдущая версия находится в ветке Archive
 
-Авторы:  
-Михаил Ненашев - nord-vizjerei@yandex.ru - https://github.com/DonnieErgo  
-Никита Андреев - MedusDjin@yandex.ru - https://github.com/MedusCode  
+Авторы:
+Михаил Ненашев - nord-vizjerei@yandex.ru - https://github.com/DonnieErgo
+Никита Андреев - MedusDjin@yandex.ru - https://github.com/MedusCode
 
 *Ссылка на GitHub Pages -* https://donnieergo.github.io/mesto-project/
