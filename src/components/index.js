@@ -6,7 +6,8 @@ import Api from "./api.js";
 import Card from "./card.js";
 import FormValidator from "./validate.js";
 import Section from "./section.js";
-import { Popup, PopupWithImage, PopupWithForm, PopupWithApprove } from './popup.js';
+import UserInfo from "./userinfo.js";
+import { PopupWithImage, PopupWithForm, PopupWithApprove } from './popup.js';
 
 const editForm = document.querySelector('.edit-form')
 const popupEdit = document.querySelector('.edit-name')
@@ -42,6 +43,8 @@ const popupZoom = document.querySelector('.card-zoom')
 const cardZoomImg = popupZoom.querySelector('.popup__img')
 const cardZoomCaption = popupZoom.querySelector('.popup__caption')
 
+const forms = document.querySelectorAll('.popup__form');
+
 const cardContainerSelector = '.elements';
 
 const validationConfig = {
@@ -72,10 +75,18 @@ const popupConfig = {
   submitButtonSelector: '.popup__button-save'
 }
 
+const userInfoConfig = {
+  userNameSelector: '.profile__name',
+  userAboutSelector: '.profile__job-title',
+  userAvatarSelector: '.profile__avatar'
+}
+
+const userInfo = new UserInfo(userInfoConfig)
+
 const editProfilePopup = new PopupWithForm(popupConfig, '.edit-name', (valuesObject) => {
   api.patchProfile(valuesObject)
   .then(res => {
-    addProfileData(res.name, res.about, res.avatar)
+    userInfo.setUserInfo(res.name, res.about, res.avatar)
     editProfilePopup.close()
   })
   .catch(err => console.log(err))
@@ -90,7 +101,7 @@ const addCardPopup = new PopupWithForm(popupConfig, '.add-card', (valuesObject) 
         {
           items: res,
           renderer: item => {
-            const cardItem = getNewCardClass(item, user)
+            const cardItem = getNewCardClass(item, userInfo.userData)
             const card = cardItem.generateCard()
             defaultCardSection.addItem(card)
           }
@@ -188,24 +199,27 @@ function getNewCardClass(cardData, userData) {
   })
 }
 
+// api.getInitialCards().then(() => {api.getInitialProfile().then{getInitialCards.resolve(cards) else reject}}.then())
+
+
+
 // Запрашиваем данные
 Promise.all([api.getInitialCards(), api.getInitialProfile()])
-.then(([cards, userData]) => {
-  user = userData;
-  const defaultCardSection = new Section(
-    {
-      items: cards.reverse(),
-      renderer: item => {
-        const cardItem = getNewCardClass(item, user)
-        const card = cardItem.generateCard()
-        defaultCardSection.addItem(card)
-      }
-    },
-    cardContainerSelector)
-  defaultCardSection.renderItems()
-  addProfileData(user.name, user.about, user.avatar)
-})
-.catch(err => console.log(err))
+  .then(([cards, userData]) => {
+    userInfo.userData = userData
+    const defaultCardSection = new Section(
+      {
+        items: cards.reverse(),
+        renderer: item => {
+          const cardItem = getNewCardClass(item, userInfo.userData)
+          const card = cardItem.generateCard()
+          defaultCardSection.addItem(card)
+        }
+      }, cardContainerSelector)
+    defaultCardSection.renderItems()
+    userInfo.setUserInfo(userInfo.userData.name, userInfo.userData.about, userInfo.userData.avatar)
+  })
+  .catch(err => console.log(err))
 
 // Наполняем профиль актуальными данными
 function addProfileData(name, about, avatar) {
@@ -319,8 +333,6 @@ addButton.addEventListener('click', () => {
 avatarButton.addEventListener('click', () => {
   changeAvatarPopup.open()
 })
-
-const forms = document.querySelectorAll('.popup__form');
 
 forms.forEach(form => {
   const formValidation = new FormValidator(validationConfig, form);
