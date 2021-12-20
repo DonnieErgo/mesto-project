@@ -4,8 +4,8 @@ import Popup from './Popup.js';
 export default class PopupWithImage extends Popup {
   constructor(config, popupSelector) {
     super(config, popupSelector)
-    this._cardZoomImg = document.querySelector(config.cardZoomImgSelector)
-    this._cardZoomCaption = document.querySelector(config.cardZoomCaptionSelector)
+    this._cardZoomImg = this._popup.querySelector(config.cardZoomImgSelector)
+    this._cardZoomCaption = this._popup.querySelector(config.cardZoomCaptionSelector)
   }
 
   // Открытие зума

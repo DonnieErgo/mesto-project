@@ -3,7 +3,7 @@ import './index.css';
 import { editButton, addButton, avatarButton, forms, nameInput, jobInput, profileAvatar, deletePopup, likeActiveClass, cardContainerSelector, validationConfig, popupConfig, userInfoConfig, cardTemplateConfig } from '../utils/constants.js';
 import Api from '../components/Api.js';
 import Card from '../components/Card.js';
-import FormValidator from '../components/Validate.js';
+import FormValidator from '../components/FormValidator.js';
 import Section from '../components/Section.js';
 import UserInfo from '../components/UserInfo.js';
 import PopupWithImage from '../components/PopupWithImage.js';
@@ -22,6 +22,7 @@ function likeToggle(evt, cardData, likeCounter) {
         if (res.likes.length > 0) likeCounter.textContent = res.likes.length
         else likeCounter.textContent = ''
       })
+      .catch(err => console.log(err))
   } else {
     api.putCardLike(id)
       .then(res => {
@@ -48,10 +49,10 @@ function openCardPopup(cardData) {
 }
 
 // Создания нового экземпляра класса Card
-function getNewCardClass(cardData, userData) {
+function getNewCardClass(cardData) {
   return new Card({
     cardData: cardData,
-    userData: userData,
+    userData: userInfo.userData,
     likeToggle: likeToggle,
     deleteCardSetup: deleteCardSetup,
     openCardPopup: openCardPopup,
@@ -70,6 +71,14 @@ const api = new Api({
 // Создание экземпляра класса UserInfo
 const userInfo = new UserInfo(userInfoConfig)
 
+// Создание экземпляра класса Section
+const defaultCardSection = new Section(
+    item => {
+      const cardItem = getNewCardClass(item)
+      return cardItem.generateCard()
+    },
+    cardContainerSelector)
+
 // Создание экземпляра класса PopupWithForm
 const editProfilePopup = new PopupWithForm(popupConfig, '.edit-name', (valuesObject) => {
   api.patchProfile(valuesObject)
@@ -79,7 +88,7 @@ const editProfilePopup = new PopupWithForm(popupConfig, '.edit-name', (valuesObj
     editProfilePopup.close()
   })
   .catch(err => console.log(err))
-  .finally(() => setTimeout(() => {editProfilePopup.submitButton.textContent = 'Сохранить'}, 305))
+  .finally(() => setTimeout(() => { editProfilePopup.renderLoading(false) }, 305))
 })
 // Навешиваем слушатели на форму
 editProfilePopup.setEventListeners()
@@ -88,20 +97,11 @@ editProfilePopup.setEventListeners()
 const addCardPopup = new PopupWithForm(popupConfig, '.add-card', (valuesObject) => {
   api.postNewCard(valuesObject)
     .then(res => {
-      const defaultCardSection = new Section(
-        {
-          items: res,
-          renderer: item => {
-            const cardItem = getNewCardClass(item, userInfo.userData)
-            const card = cardItem.generateCard()
-            defaultCardSection.addItem(card)
-          }
-        }, cardContainerSelector)
-      defaultCardSection.renderItems()
+      defaultCardSection.addItem(res)
       addCardPopup.close()
     })
     .catch(err => console.log(err))
-    .finally(() => setTimeout(() => {addCardPopup.submitButton.textContent = 'Добавить'}, 305))
+    .finally(() => setTimeout(() => { addCardPopup.renderLoading(false, 'Добавить') }, 305))
 })
 // Навешиваем слушатели на форму
 addCardPopup.setEventListeners()
@@ -110,11 +110,12 @@ addCardPopup.setEventListeners()
 const changeAvatarPopup = new PopupWithForm(popupConfig, '.change-avatar', (valuesObject) => {
   api.patchAvatar(valuesObject.avatar)
     .then(res => {
-      profileAvatar.src = res.avatar
+      userInfo.setUserInfo(res.name, res.about, res.avatar)
+      userInfo.userData = res
       changeAvatarPopup.close()
     })
     .catch(err => console.log(err))
-    .finally(() => setTimeout(() => { changeAvatarPopup.submitButton.textContent = 'Сохранить' }, 305))
+    .finally(() => setTimeout(() => { changeAvatarPopup.renderLoading(false) }, 305))
 })
 // Навешиваем слушатели на форму
 changeAvatarPopup.setEventListeners()
@@ -127,7 +128,7 @@ cardZoomPopup.setEventListeners()
 const deleteCardPopup = new PopupWithApprove(popupConfig, '.delete-card', () => {
   const id = deletePopup.getAttribute('data-id')
   const card = document.querySelector(`[data-id='${id}']`)
-  deleteCardPopup.submitButton.textContent = 'Сохраняем...'
+  deleteCardPopup.renderLoading(true)
 
   api.deleteCard(id)
     .then(() => {
@@ -135,7 +136,7 @@ const deleteCardPopup = new PopupWithApprove(popupConfig, '.delete-card', () => 
       deleteCardPopup.close()
     })
     .catch(err => console.log(err))
-    .finally(() => setTimeout(() => { deleteCardPopup.submitButton.textContent = 'Да' }, 305))
+    .finally(() => setTimeout(() => { deleteCardPopup.renderLoading(false) }, 305))
 })
 // Навешиваем слушатели на кнопку удаления
 deleteCardPopup.setEventListeners()
@@ -168,16 +169,7 @@ forms.forEach(form => {
 Promise.all([api.getInitialCards(), api.getInitialProfile()])
   .then(([cards, userData]) => {
     userInfo.userData = userData
-    const defaultCardSection = new Section(
-      {
-        items: cards.reverse(),
-        renderer: item => {
-          const cardItem = getNewCardClass(item, userInfo.userData)
-          const card = cardItem.generateCard()
-          defaultCardSection.addItem(card)
-        }
-      }, cardContainerSelector)
-    defaultCardSection.renderItems()
+    defaultCardSection.renderItems(cards.reverse())
     userInfo.setUserInfo(userInfo.userData.name, userInfo.userData.about, userInfo.userData.avatar)
   })
   .catch(err => console.log(err))
