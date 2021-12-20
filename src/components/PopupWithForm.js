@@ -19,12 +19,18 @@ export default class PopupWithForm extends Popup {
     return valuesObject
   }
 
+  // Замена текста в кнопке на время загрузки
+  renderLoading(isLoading, buttonText='Сохранить') {
+    if (isLoading) this.submitButton.textContent = 'Сохраняем...'
+    else this.submitButton.textContent = buttonText
+  }
+
   // Навешивание слушателей сабмита
   setEventListeners() {
     super.setEventListeners()
     this._popupForm.addEventListener('submit', evt => {
       evt.preventDefault()
-      this.submitButton.textContent = 'Сохраняем...'
+      this.renderLoading(true)
       this._submitForm(this._getInputValues())
     })
   }

@@ -1,25 +1,20 @@
 // Класс для добавления элементов в DOM
 export default class Section {
-  constructor({items, renderer}, containerSelector) {
-    this._items = items;
+  constructor(renderer, containerSelector) {
     this._renderer = renderer;
-    this._containerSelector = containerSelector;
+    this._container = document.querySelector(containerSelector);
   }
 
   // Добавление элемента в DOM
   addItem(item) {
-    document.querySelector(this._containerSelector).prepend(item);
+    const card = this._renderer(item)
+    this._container.prepend(card);
   }
 
   // Рендер карточки
-  renderItems() {
-    if (Array.isArray(this._items)) {
-      this._items.forEach(item => {
-        this._renderer(item);
-      })
-    }
-    else {
-      this._renderer(this._items)
-    }
+  renderItems(items) {
+    items.forEach(item => {
+      this.addItem(item);
+    })
   }
 }

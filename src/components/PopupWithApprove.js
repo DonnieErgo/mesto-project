@@ -8,6 +8,12 @@ export default class PopupWithApprove extends Popup {
     this.submitButton = this._popup.querySelector(config.submitButtonSelector)
   }
 
+  // Замена текста в кнопке на время загрузки
+  renderLoading(isLoading, buttonText='Да') {
+    if (isLoading) this.submitButton.textContent = 'Сохраняем...'
+    else this.submitButton.textContent = buttonText
+  }
+
   // Навешивание слушателей
   setEventListeners() {
     super.setEventListeners()
