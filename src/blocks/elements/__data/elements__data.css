@@ -1,4 +1,5 @@
 .elements__data{
+  max-height: 26px;
   margin: 25px 15px 31px 21px;
   display: flex;
   flex-flow: row;
