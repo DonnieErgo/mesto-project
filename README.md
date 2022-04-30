@@ -1,22 +1,20 @@
-### Проект: Место
+### Mesto project
 
-### Стек
+### Tech stack
 
 * Figma
 * HTML/CSS > Flexbox/Grid
 * Vanilla JS
 * Webpack
 
-#### Проект адаптивного web-приложения для добавления картинок с описанием, реализован следующий функционал:
-- Открытие модальных окон по крестику / Escape / клику вне окна
-- Редактирование информации в профиле
-- Добавление/удаление/лайк карточек
-- Зум картинок по клику
-- Валидация всех форм
-- Установлен Webpack и настроены сборки build/dev
-- Настроена минификация и транспиляция Babel
-- Взаимодействие с сервером - промисы и фетч
+#### Adaptive web-application to add pictures with descriptions, the following functionality is implemented:
+- Closing modal windows via ui button / Escape / click outside the window
+- Editing information in the profile seciton
+- Add / remove / like cards
+- Zoom in on images on click
+- Form validation
+- Webpack installed and configured build/dev
+- Minification and transpilation Babel configured
+- Server interaction via promises and fetch
 
-Автор - Михаил Ненашев
-
-*Ссылка на GitHub Pages -* https://donnieergo.github.io/mesto-project/
+*GitHub Pages Link -* https://donnieergo.github.io/mesto-project/
